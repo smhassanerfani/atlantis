@@ -1,0 +1,322 @@
+[
+    {
+        "name": "person",
+        "attributes": []
+    },
+    {
+        "name": "bicycle",
+        "attributes": []
+    },
+    {
+        "name": "car",
+        "attributes": []
+    },
+    {
+        "name": "motorcycle",
+        "attributes": []
+    },
+    {
+        "name": "airplane",
+        "attributes": []
+    },
+    {
+        "name": "bus",
+        "attributes": []
+    },
+    {
+        "name": "train",
+        "attributes": []
+    },
+    {
+        "name": "truck",
+        "attributes": []
+    },
+    {
+        "name": "boat",
+        "attributes": []
+    },
+    {
+        "name": "traffic_light",
+        "attributes": []
+    },
+    {
+        "name": "fire_hydrant",
+        "attributes": []
+    },
+    {
+        "name": "stop_sign",
+        "attributes": []
+    },
+    {
+        "name": "parking_meter",
+        "attributes": []
+    },
+    {
+        "name": "bench",
+        "attributes": []
+    },
+    {
+        "name": "bird",
+        "attributes": []
+    },
+    {
+        "name": "cat",
+        "attributes": []
+    },
+    {
+        "name": "dog",
+        "attributes": []
+    },
+    {
+        "name": "horse",
+        "attributes": []
+    },
+    {
+        "name": "sheep",
+        "attributes": []
+    },
+    {
+        "name": "cow",
+        "attributes": []
+    },
+    {
+        "name": "elephant",
+        "attributes": []
+    },
+    {
+        "name": "bear",
+        "attributes": []
+    },
+    {
+        "name": "zebra",
+        "attributes": []
+    },
+    {
+        "name": "giraffe",
+        "attributes": []
+    },
+    {
+        "name": "backpack",
+        "attributes": []
+    },
+    {
+        "name": "umbrella",
+        "attributes": []
+    },
+    {
+        "name": "handbag",
+        "attributes": []
+    },
+    {
+        "name": "tie",
+        "attributes": []
+    },
+    {
+        "name": "suitcase",
+        "attributes": []
+    },
+    {
+        "name": "frisbee",
+        "attributes": []
+    },
+    {
+        "name": "skis",
+        "attributes": []
+    },
+    {
+        "name": "snowboard",
+        "attributes": []
+    },
+    {
+        "name": "sports_ball",
+        "attributes": []
+    },
+    {
+        "name": "kite",
+        "attributes": []
+    },
+    {
+        "name": "baseball_bat",
+        "attributes": []
+    },
+    {
+        "name": "baseball_glove",
+        "attributes": []
+    },
+    {
+        "name": "skateboard",
+        "attributes": []
+    },
+    {
+        "name": "surfboard",
+        "attributes": []
+    },
+    {
+        "name": "tennis_racket",
+        "attributes": []
+    },
+    {
+        "name": "bottle",
+        "attributes": []
+    },
+    {
+        "name": "wine_glass",
+        "attributes": []
+    },
+    {
+        "name": "cup",
+        "attributes": []
+    },
+    {
+        "name": "fork",
+        "attributes": []
+    },
+    {
+        "name": "knife",
+        "attributes": []
+    },
+    {
+        "name": "spoon",
+        "attributes": []
+    },
+    {
+        "name": "bowl",
+        "attributes": []
+    },
+    {
+        "name": "banana",
+        "attributes": []
+    },
+    {
+        "name": "apple",
+        "attributes": []
+    },
+    {
+        "name": "sandwich",
+        "attributes": []
+    },
+    {
+        "name": "orange",
+        "attributes": []
+    },
+    {
+        "name": "broccoli",
+        "attributes": []
+    },
+    {
+        "name": "carrot",
+        "attributes": []
+    },
+    {
+        "name": "hot_dog",
+        "attributes": []
+    },
+    {
+        "name": "pizza",
+        "attributes": []
+    },
+    {
+        "name": "donut",
+        "attributes": []
+    },
+    {
+        "name": "cake",
+        "attributes": []
+    },
+    {
+        "name": "chair",
+        "attributes": []
+    },
+    {
+        "name": "couch",
+        "attributes": []
+    },
+    {
+        "name": "potted_plant",
+        "attributes": []
+    },
+    {
+        "name": "bed",
+        "attributes": []
+    },
+    {
+        "name": "dining_table",
+        "attributes": []
+    },
+    {
+        "name": "toilet",
+        "attributes": []
+    },
+    {
+        "name": "tv",
+        "attributes": []
+    },
+    {
+        "name": "laptop",
+        "attributes": []
+    },
+    {
+        "name": "mouse",
+        "attributes": []
+    },
+    {
+        "name": "remote",
+        "attributes": []
+    },
+    {
+        "name": "keyboard",
+        "attributes": []
+    },
+    {
+        "name": "cell_phone",
+        "attributes": []
+    },
+    {
+        "name": "microwave",
+        "attributes": []
+    },
+    {
+        "name": "oven",
+        "attributes": []
+    },
+    {
+        "name": "toaster",
+        "attributes": []
+    },
+    {
+        "name": "sink",
+        "attributes": []
+    },
+    {
+        "name": "refrigerator",
+        "attributes": []
+    },
+    {
+        "name": "book",
+        "attributes": []
+    },
+    {
+        "name": "clock",
+        "attributes": []
+    },
+    {
+        "name": "vase",
+        "attributes": []
+    },
+    {
+        "name": "scissors",
+        "attributes": []
+    },
+    {
+        "name": "teddy_bear",
+        "attributes": []
+    },
+    {
+        "name": "hair_drier",
+        "attributes": []
+    },
+    {
+        "name": "toothbrush",
+        "attributes": []
+    }
+]
