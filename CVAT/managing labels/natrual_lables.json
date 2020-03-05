@@ -1,0 +1,74 @@
+[
+    {
+        "name": "flood",
+        "attributes": []
+    },
+    {
+        "name": "sea",
+        "attributes": []
+    },
+    {
+        "name": "river",
+        "attributes": []
+    },
+    {
+        "name": "lake",
+        "attributes": []
+    },
+    {
+        "name": "wetland",
+        "attributes": []
+    },
+    {
+        "name": "mangrove",
+        "attributes": []
+    },
+    {
+        "name": "snow",
+        "attributes": []
+    },
+    {
+        "name": "shoreline",
+        "attributes": []
+    },
+    {
+        "name": "fjord",
+        "attributes": []
+    },
+    {
+        "name": "puddle",
+        "attributes": []
+    },
+    {
+        "name": "Hot spring",
+        "attributes": []
+    },
+    {
+        "name": "waterfall",
+        "attributes": []
+    },
+    {
+        "name": "glaciers",
+        "attributes": []
+    },
+    {
+        "name": "river delta",
+        "attributes": []
+    },
+    {
+        "name": "rapids",
+        "attributes": []
+    },
+    {
+        "name": "cliff",
+        "attributes": []
+    },
+    {
+        "name": "marsh",
+        "attributes": []
+    },
+    {
+        "name": "cypress tree",
+        "attributes": []
+    }
+]
