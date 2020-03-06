@@ -20,7 +20,7 @@
         "attributes": []
     },
     {
-        "name": "water tower",
+        "name": "water_tower",
         "attributes": []
     },
     {
@@ -48,11 +48,11 @@
         "attributes": []
     },
     {
-        "name": "swimming pool",
+        "name": "swimming_pool",
         "attributes": []
     },
     {
-        "name": "oil rig",
+        "name": "offshore_platform",
         "attributes": []
     },
     {
@@ -60,7 +60,7 @@
         "attributes": []
     },
     {
-        "name": "water well",
+        "name": "water_well",
         "attributes": []
     },
     {

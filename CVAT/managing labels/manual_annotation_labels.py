@@ -14,15 +14,15 @@ natural_list = list(filter(None, natural_list))
 artificial_list = list(filter(None, artificial_list))
 
 # print(natural_list, artificial_list)
-# nnatural_list = list()
+nnatural_list = list()
 nartificial_list = list()
-for label in artificial_list:
+for label in natural_list:
     ndict = dict()
     ndict['name'] = label
 
     ndict['attributes'] = []
 
-    nartificial_list.append(ndict)
+    nnatural_list.append(ndict)
 
-with open('artificial_lables.json', 'w') as jf:
-    json.dump(nartificial_list, jf, indent=4)
+with open('natural_lables.json', 'w') as jf:
+    json.dump(nnatural_list, jf, indent=4)

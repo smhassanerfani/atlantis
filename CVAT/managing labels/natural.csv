@@ -4,16 +4,16 @@ canal,sea
 culvert,river
 levee,lake
 ditch,wetland
-water tower,mangrove
+water_tower,mangrove
 pier,snow
 pipeline,shoreline
 breakwater,fjord
 bridge,puddle
-reservoir,Hot spring
+reservoir,hot_spring
 lighthouse,waterfall
-swimming pool,glaciers
-oil rig,river delta
+swimming_pool,glaciers
+offshore_platform,river_delta
 ship,rapids
-water well,cliff
+water_well,cliff
 spillway,marsh
 ,cypress tree
