@@ -24,10 +24,6 @@
         "attributes": []
     },
     {
-        "name": "traffic light",
-        "attributes": []
-    },
-    {
         "name": "traffic sign",
         "attributes": []
     },
@@ -44,35 +40,7 @@
         "attributes": []
     },
     {
-        "name": "person",
-        "attributes": []
-    },
-    {
         "name": "rider",
-        "attributes": []
-    },
-    {
-        "name": "car",
-        "attributes": []
-    },
-    {
-        "name": "truck",
-        "attributes": []
-    },
-    {
-        "name": "bus",
-        "attributes": []
-    },
-    {
-        "name": "train",
-        "attributes": []
-    },
-    {
-        "name": "motorcycle",
-        "attributes": []
-    },
-    {
-        "name": "bicycle",
         "attributes": []
     },
     {

@@ -27,27 +27,25 @@ sudo apt-get install -y google-chrome-stable
 
 # Build docker image
 docker-compose -f docker-compose.yml -f components/openvino/docker-compose.openvino.yml build
+docker-compose -f docker-compose.yml -f components/openvino/docker-compose.openvino.yml up -d
 
 # Semi-Automatic Segmentation with Deep Extreme Cut:
 # using deep learning models for semi-automatic semantic segmentation. get a segmentation polygon from four (or more) extreme points of an object.
 # based on the pre-trained DEXTR model which has been converted to Inference Engine format.
 docker-compose -f docker-compose.yml -f components/openvino/docker-compose.openvino.yml -f cvat/apps/dextr_segmentation/docker-compose.dextr.yml build
+docker-compose -f docker-compose.yml -f components/openvino/docker-compose.openvino.yml -f cvat/apps/dextr_segmentation/docker-compose.dextr.yml up -d
 
 # Kibana
 docker-compose -f docker-compose.yml -f components/analytics/docker-compose.analytics.yml build
+docker-compose -f docker-compose.yml -f components/analytics/docker-compose.analytics.yml up -d
 
 # Fast R-CNN
 docker-compose -f docker-compose.yml -f components/tf_annotation/docker-compose.tf_annotation.yml build
+docker-compose -f docker-compose.yml -f components/tf_annotation/docker-compose.tf_annotation.yml up -d
 
 # Keras+Tensorflow Mask R-CNN Segmentation:
 # automatical segment many various objects on images, pre-trained model on MS COCO dataset, based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
 docker-compose -f docker-compose.yml -f components/auto_segmentation/docker-compose.auto_segmentation.yml build
-
-# Run docker container
-docker-compose -f docker-compose.yml -f components/openvino/docker-compose.openvino.yml up -d
-docker-compose -f docker-compose.yml -f components/openvino/docker-compose.openvino.yml -f cvat/apps/dextr_segmentation/docker-compose.dextr.yml up -d
-docker-compose -f docker-compose.yml -f components/analytics/docker-compose.analytics.yml up -d
-docker-compose -f docker-compose.yml -f components/tf_annotation/docker-compose.tf_annotation.yml up -d
 docker-compose -f docker-compose.yml -f components/auto_segmentation/docker-compose.auto_segmentation.yml up -d
 
 docker-compose -f docker-compose.yml -f components/openvino/docker-compose.openvino.yml -f cvat/apps/dextr_segmentation/docker-compose.dextr.yml -f components/auto_segmentation/docker-compose.auto_segmentation.yml build

@@ -10,17 +10,21 @@ api_key = 'da03d4d2c9d70753c5b918009711b9ea'
 # Secret:
 secret = 'f35c6f99121e3e83'
 
-natural_list = list()
+# natural_list = list()
 artificial_list = list()
 
-with open('list.csv', encoding="utf8", errors='ignore') as csvfile:
-    list_csv_dict = csv.DictReader(csvfile)
-    for row in list_csv_dict:
-        natural_list.append(row.get('natural'))
-        artificial_list.append(row.get('artificial'))
+# with open('list.csv', encoding="utf8", errors='ignore') as csvfile:
+#     list_csv_dict = csv.DictReader(csvfile)
+#     for row in list_csv_dict:
+#         natural_list.append(row.get('natural'))
+#         artificial_list.append(row.get('artificial'))
 
-natural_list = list(filter(None, natural_list))
-artificial_list = list(filter(None, artificial_list))
+# natural_list = list(filter(None, natural_list))
+# artificial_list = list(filter(None, artificial_list))
+
+artificial_list = ['reservoir', 'water reservoir', 'spillway' 'spillway dam',
+                   'morning glory spillway', 'hole spillway', 'swimming pool', 'water well']
+
 
 licenses = [
     {"url": "http://creativecommons.org/licenses/by-nc-sa/2.0/",
@@ -28,7 +32,7 @@ licenses = [
     {"url": "http://creativecommons.org/licenses/by-nc/2.0/",
         "id": 2, "name": "Attribution-NonCommercial License"},
     {"url": "http://creativecommons.org/licenses/by-nc-nd/2.0/",
-        "id": 3, "name": "Attribution-NonCommercial-NoDerivs License"},
+        "id": 3, "nameswimming pool": "Attribution-NonCommercial-NoDerivs License"},
     {"url": "http://creativecommons.org/licenses/by/2.0/",
         "id": 4, "name": "Attribution License"},
     {"url": "http://creativecommons.org/licenses/by-sa/2.0/",
@@ -41,51 +45,26 @@ licenses = [
         "id": 8, "name": "United States Government Work"}
 ]
 
-os.mkdir('images')
-main_dir = os.path.join(os.getcwd(), 'images')
+os.chdir('/home/serfani/Downloads/images_pn2')
+# emp_dir = os.mkdir('images_pn2')
+main_dir = os.getcwd()
 
-for dir1 in natural_list:
+for dir1 in artificial_list:
     for num in range(len(licenses)):
-        file_path = os.path.join(dir1, licenses[num].get('name'))
+        file_path = os.path.join(dir1, str(licenses[num].get('id')))
         file_path2 = os.path.join(main_dir, file_path)
         os.makedirs(file_path2)
 
         tag = dir1
         license_type = licenses[num].get('id')
-        per_page = 3
-        page_number = 1
+        per_page = 50
+        page_number = 2
 
         url = 'https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key={api_key}&tags={tag}&license={license_type}&is_commons=&per_page={per_page}&page={page_number}&format=json&nojsoncallback=1'.format(
             api_key=api_key, tag=tag, license_type=license_type, per_page=per_page, page_number=page_number)
         r = requests.get(url)
         data = r.json()
 
-        ''' we need to pars the information that we got from flickr in such a format:
-            This is what we have:
-
-            {
-                "id": "49379823277",
-                "owner": "82256086@N00",
-                "secret": "d2afbf2523",
-                "server": "65535",
-                "farm": 66,
-                "title": "Hudson River Sunset",
-                "ispublic": 1,
-                "isfriend": 0,
-                "isfamily": 0
-            }
-
-            This is what we want:
-            {
-                "id": 229753
-                "license": 4,
-                "flickr_url": "http://farm4.staticflickr.com/3271/2787713866_34ab4ca3d3_z.jpg",
-                "width": 640,
-                "height": 427,
-                "file_name": "000000229753.jpg",
-                "date_captured": "2013-11-17 00:12:59",
-            }
-        '''
         for element in data['photos']['photo']:
             del element['title'], element['owner'], element['ispublic'], element['isfriend'], element['isfamily']
             element['license'] = licenses[num].get('id')
@@ -124,3 +103,6 @@ for dir1 in natural_list:
                 print('File name too long')
             except (requests.ConnectTimeout, requests.HTTPError, requests.ReadTimeout, requests.Timeout, requests.ConnectionError):
                 print(' Max retries exceeded with url')
+        print('license {} has been downloaded'.format(num))
+    print('label {} has been done'.format(dir1))
+print('mission complete')
