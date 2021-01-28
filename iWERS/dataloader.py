@@ -129,7 +129,7 @@ data_transforms = {
 # Hyper-parameters
 num_workers = 4
 batch_size = 3
-num_epochs = 50
+num_epochs = 1
 learning_rate = 1e-6
 
 image_datasets = {x: Atlantis(split=x, transform=data_transforms[x])
@@ -173,9 +173,9 @@ def colorize_mask(mask):
 # colorize_mask(labels[12]).show()
 
 # TRAINING
-def cvs_writer(log_list, fieldnames):
+def cvs_writer(log_list, fieldnames, model_name):
     import csv
-    with open("output.csv", 'w', newline='') as filehandler:
+    with open(f"./models/{model_name}/output.csv", 'w', newline='') as filehandler:
         fh_writer = csv.DictWriter(filehandler, fieldnames=fieldnames)
 
         fh_writer.writeheader()
@@ -231,7 +231,7 @@ class Focalloss(nn.Module):
         return loss
 
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_model(model, model_name, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -317,8 +317,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                         # "scheduler_state": scheduler.state_dict(),
                         "best_acc": epoch_acc,
                     }
-                    save_path = "./models/deeplabv3_resnet50_focalloss/model.pth".format(
-                        epoch)
+                    save_path = f"./models/{model_name}/model.pth"
                     torch.save(state, save_path)
 
         print()
@@ -330,11 +329,19 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    cvs_writer(log_list, fieldnames)
+    cvs_writer(log_list, fieldnames, model_name)
     return model
 
 
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
+
+model_name = "deeplabv3_resnet50"
+
+import os
+try:
+    os.makedirs(os.path.join("./models", model_name))
+except FileExistsError:
+    pass
 
 model = models.segmentation.deeplabv3_resnet50(pretrained=True, progress=True)
 model.classifier = DeepLabHead(2048, 56)
@@ -352,7 +359,7 @@ criterion = Focalloss(num_classes=56, gamma=2, ignore_index=255)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 # scheduler = lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
-model = train_model(model, criterion, optimizer,
+model = train_model(model, model_name, criterion, optimizer,
                     scheduler=None, num_epochs=num_epochs)
 
 ############################################ TESTING PART ###################################
