@@ -1,4 +1,4 @@
 venv/
-models/
+models/*/*.txt
 data/CamVid
 data/cityscapes
