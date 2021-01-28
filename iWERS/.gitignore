@@ -1,3 +1,4 @@
 venv/
 models/
-data/
+data/CamVid
+data/cityscapes
