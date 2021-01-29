@@ -129,7 +129,7 @@ data_transforms = {
 # Hyper-parameters
 num_workers = 4
 batch_size = 3
-num_epochs = 1
+num_epochs = 100
 learning_rate = 1e-6
 
 image_datasets = {x: Atlantis(split=x, transform=data_transforms[x])
