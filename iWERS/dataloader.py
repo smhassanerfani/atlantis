@@ -76,17 +76,17 @@ class Atlantis(Dataset):
             # we used this instead of TF.random_crop becasue the cropping parameters
             # should be the same for both image and mask
             i, j, h, w = transforms.RandomCrop.get_params(
-                image, output_size=(512, 512))
+                image, output_size=(256, 256))
             image = TF.crop(image, i, j, h, w)
             mask = TF.crop(mask, i, j, h, w)
 
             # Random horizontal flipping
-            if random.random() > 0.5:
+            if random.random() > 0.3:
                 image = TF.hflip(image)
                 mask = TF.hflip(mask)
 
             # Random vertical flipping
-            # if random.random() > 0.5:
+            # if random.random() > 0.1:
             #     image = TF.vflip(image)
             #     mask = TF.vflip(mask)
 
@@ -156,13 +156,14 @@ def colorize_mask(mask):
     new_mask.putpalette(palette)
     return new_mask
 
-# print(f"length of the data: {len(dataloaders['train']) * batch_size}")
-# dataiter = iter(dataloaders['train'])
+# print(f"length of the data: {len(dataloaders['val']) * batch_size}")
+# dataiter = iter(dataloaders['val'])
 # images, labels, names = dataiter.next()
 # print("images: (batch size, channels, Height, Width)")
 # print(images.size(), images.dtype)
 # print(images.max(), images.min())
-# print(names)
+# imshow(images[0])
+# exit()
 
 # print("masks: (batch size, Height, Width)")
 # print(labels.size(), labels.dtype)
@@ -174,7 +175,7 @@ def colorize_mask(mask):
 # colorize_mask(labels[12]).show()
 
 # TRAINING
-def cvs_writer(log_list, fieldnames, model_name):
+def csv_writer(log_list, fieldnames, model_name):
     import csv
     with open(f"./models/{model_name}/output.csv", 'w', newline='') as filehandler:
         fh_writer = csv.DictWriter(filehandler, fieldnames=fieldnames)
@@ -318,8 +319,8 @@ def train_model(model, model_name, criterion, optimizer, scheduler, num_epochs=2
                         # "scheduler_state": scheduler.state_dict(),
                         "best_acc": epoch_acc,
                     }
-                    save_path = f"./models/{model_name}/model.pth"
-                    torch.save(state, save_path)
+                    # save_path = f"./models/{model_name}/model.pth"
+                    # torch.save(state, save_path)
 
         print()
 
@@ -330,7 +331,7 @@ def train_model(model, model_name, criterion, optimizer, scheduler, num_epochs=2
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    cvs_writer(log_list, fieldnames, model_name)
+    csv_writer(log_list, fieldnames, model_name)
     return model
 
 
