@@ -68,26 +68,27 @@ class Atlantis(Dataset):
         mask = Image.open(mask_path)
 
         resize = transforms.Resize(
-            size=(520, 520), interpolation=Image.NEAREST)
+            size=(512, 512), interpolation=Image.NEAREST)
         image = resize(image)
         mask = resize(mask)
 
-        # we used this instead of TF.random_crop becasue the cropping parameters
-        # should be the same for both image and mask
-        i, j, h, w = transforms.RandomCrop.get_params(
-            image, output_size=(512, 512))
-        image = TF.crop(image, i, j, h, w)
-        mask = TF.crop(mask, i, j, h, w)
+        if self.split == "train":
+            # we used this instead of TF.random_crop becasue the cropping parameters
+            # should be the same for both image and mask
+            i, j, h, w = transforms.RandomCrop.get_params(
+                image, output_size=(512, 512))
+            image = TF.crop(image, i, j, h, w)
+            mask = TF.crop(mask, i, j, h, w)
 
-        # Random horizontal flipping
-        if random.random() > 0.5:
-            image = TF.hflip(image)
-            mask = TF.hflip(mask)
+            # Random horizontal flipping
+            if random.random() > 0.5:
+                image = TF.hflip(image)
+                mask = TF.hflip(mask)
 
-        # Random vertical flipping
-        # if random.random() > 0.5:
-        #     image = TF.vflip(image)
-        #     mask = TF.vflip(mask)
+            # Random vertical flipping
+            # if random.random() > 0.5:
+            #     image = TF.vflip(image)
+            #     mask = TF.vflip(mask)
 
         # Transform to tensor
         image = TF.to_tensor(image)
