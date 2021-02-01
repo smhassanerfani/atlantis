@@ -130,7 +130,7 @@ data_transforms = {
 num_workers = 4
 batch_size = 3
 num_epochs = 100
-learning_rate = 1e-6
+learning_rate = 1e-7
 
 image_datasets = {x: Atlantis(split=x, transform=data_transforms[x])
                   for x in ['train', 'val', 'test']}
@@ -335,7 +335,7 @@ def train_model(model, model_name, criterion, optimizer, scheduler, num_epochs=2
 
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 
-model_name = "deeplabv3_resnet50"
+model_name = "deeplabv3_resnet50_1e-7lr"
 
 import os
 try:
@@ -346,9 +346,9 @@ except FileExistsError:
 model = models.segmentation.deeplabv3_resnet50(pretrained=True, progress=True)
 model.classifier = DeepLabHead(2048, 56)
 
-# FILE = "./models/deeplabv3_resnet50/model_99_40.pth"
-# checkpoint = torch.load(FILE)
-# model.load_state_dict(checkpoint['model_state'])
+FILE = "./models/deeplabv3_resnet50/model.pth"
+checkpoint = torch.load(FILE)
+model.load_state_dict(checkpoint['model_state'])
 
 model.to(device)
 
