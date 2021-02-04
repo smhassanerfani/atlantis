@@ -14,12 +14,12 @@ secret = 'f35c6f99121e3e83'
 
 # natural_list = list()
 # artificial_list = list()
-
-# with open('list.csv', encoding="utf8", errors='ignore') as csvfile:
-#     list_csv_dict = csv.DictReader(csvfile)
-#     for row in list_csv_dict:
-#         natural_list.append(row.get('natural'))
-#         artificial_list.append(row.get('artificial'))
+# path = "./"
+# with open(path, encoding="utf8", errors='ignore') as csvfile:
+#     csv_list = csv.DictReader(csvfile)
+#     for row in csv_list:
+#         natural_list.append(row['natural'])
+#         artificial_list.append(row['artificial'])
 
 # natural_list = list(filter(None, natural_list))
 # artificial_list = list(filter(None, artificial_list))
