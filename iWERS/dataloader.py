@@ -165,7 +165,7 @@ learning_rate = 1e-7
 image_datasets = {x: Atlantis(split=x, transform=data_transforms[x])
                   for x in ['train', 'val', 'test']}
 dataloaders = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True,
-                             num_workers=num_workers, drop_last=True) for x in ['train', 'val', 'test']}
+                             num_workers=num_workers, drop_last=False) for x in ['train', 'val', 'test']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val', 'test']}
 
 # CHECKING THE IMAGES AND MASKS
@@ -458,9 +458,11 @@ def save_mask(mbatch, names, width, height, flag="gt"):
             name = names[indx].split(".")[0] + "_gt.png"    
         else:
             mask = Image.fromarray(mask.astype(np.uint8))
-            mask = mask.resize((width[indx].item(), height[indx].item()), resample=Image.NEAREST)
+            # mask = mask.resize((width[indx].item(), height[indx].item()), resample=Image.NEAREST)
+            mask = mask.crop((0, 0, width[indx].item(), height[indx].item()))
             name = names[indx].split(".")[0] + "_pred.png"
-            path = f"./models/{model_name}/predictions"  
+            path = f"./models/{model_name}/predictions"
+        print(f"{path}/{name}")  
         mask.save(f"{path}/{name}")
 
 # acc = 0
@@ -471,7 +473,7 @@ def save_mask(mbatch, names, width, height, flag="gt"):
 with torch.no_grad():
     for images, labels, names, w, h in dataloaders[phase]:
         
-        imshow(images[0])
+        # imshow(images[0])
         # imsave(images, names)
         # save_mask(labels, names)
 
@@ -479,30 +481,26 @@ with torch.no_grad():
         labels [labels == -1] = 255
         images = images.to(device)
         # labels = labels.to(device)
-        print(w, h)
 
         outputs = model(images)
-        print(outputs['out'].size())
         # max returns (value ,index)
         _, preds = torch.max(outputs['out'], 1)
         preds = preds.to('cpu')
-        colorize_mask(preds[0]).show()
-        exit()
-        # save_mask(preds, names, w, h, flag="pred")
+        save_mask(preds, names, w, h, flag="pred")
 
-        running_corrects += torch.sum(preds == labels)
-        labels = labels.numpy()
-        preds = preds.numpy()
+    #     running_corrects += torch.sum(preds == labels)
+    #     labels = labels.numpy()
+    #     preds = preds.numpy()
 
-        acc, acc_cls, mean_iu, fwavacc = starmap(operator.add, zip((acc, acc_cls, mean_iu, fwavacc),
-            label_accuracy_score(labels, preds)))
+    #     acc, acc_cls, mean_iu, fwavacc = starmap(operator.add, zip((acc, acc_cls, mean_iu, fwavacc),
+    #         label_accuracy_score(labels, preds)))
 
-    epoch_acc = running_corrects.double() / (dataset_sizes[phase] * labels.shape[1] * labels.shape[2])
-    print(epoch_acc)
-    print(f"acc: {100 * acc / len(dataloaders[phase]):.4f}")
-    print(f"acc_cls: {100 * acc_cls / len(dataloaders[phase]):.4f}")
-    print(f"mean_iu: {100 * mean_iu / len(dataloaders[phase]):.4f}")
-    print(f"fwavacc: {100 * fwavacc / len(dataloaders[phase]):.4f}")
+    # epoch_acc = running_corrects.double() / (dataset_sizes[phase] * labels.shape[1] * labels.shape[2])
+    # print(epoch_acc)
+    # print(f"acc: {100 * acc / len(dataloaders[phase]):.4f}")
+    # print(f"acc_cls: {100 * acc_cls / len(dataloaders[phase]):.4f}")
+    # print(f"mean_iu: {100 * mean_iu / len(dataloaders[phase]):.4f}")
+    # print(f"fwavacc: {100 * fwavacc / len(dataloaders[phase]):.4f}")
 
     # dataiter = iter(dataloaders[phase])
     # images, labels, names, w, h = dataiter.next()
