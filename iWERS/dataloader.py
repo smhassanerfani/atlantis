@@ -7,7 +7,7 @@ import torchvision.transforms as transforms
 import torchvision.transforms.functional as TF
 from torchvision import models
 # from torchsummary import summary
-from PIL import Image
+from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -30,7 +30,6 @@ palette = [0,0,0,0,64,64,64,64,192,23,46,206,224,128,0,32,64,0,32,64,128,48,141,
 #     palette.append(0)
 #     # name id  color
 
-
 class Atlantis(Dataset):
 
     def __init__(self, rootdir="./data/atlantis/", split="train", transform=None):
@@ -40,12 +39,12 @@ class Atlantis(Dataset):
         self.transform = transform
         self.images_base = os.path.join(self.rootdir, "images", self.split)
         self.masks_base = os.path.join(self.rootdir, "masks", self.split)
-        self.items_list = self.get_images_list(self.images_base, self.masks_base)
+        self.items_list = self.get_images_list()
 
-    def get_images_list(self, images_base, masks_base):
+    def get_images_list(self):
         items_list = []
-        for root, dirs, files in os.walk(images_base, topdown=True):
-            mask_root = os.path.join(masks_base, root.split("/")[-1])
+        for root, dirs, files in os.walk(self.images_base, topdown=True):
+            mask_root = os.path.join(self.masks_base, root.split("/")[-1])
             for name in files:
                 if name.endswith(".jpg"):
                     # print(name)
@@ -60,20 +59,50 @@ class Atlantis(Dataset):
                     })
         return items_list
 
+    def image_resize(self, img, new_size=512):
+        alpha = random.uniform(1.0, 2.0)
+        width, height = img.size
+        w = width
+        h = height
+        if width < new_size:
+            w = new_size
+            h = height * (w / width)
+            if h < new_size:
+                w = w * (new_size / h)
+                h = new_size
+        elif height < new_size:
+            h = new_size
+            w = width * (h / height)
+            if w < new_size:
+                h = h * (new_size / w)
+                w = new_size
+        return int(alpha * w), int(alpha * h)
+
+    def image_padding(self, img, new_size=700):
+        w, h = img.size
+        right = new_size - w
+        bottom = new_size - h
+        # left, top, right, bottom = (20, 30, 40, 50)
+        dimg = ImageOps.expand(img, border=(0, 0, right, bottom), fill=0)
+        return dimg
+
     def __getitem__(self, index):
         image_path = self.items_list[index]["img"]
         mask_path = self.items_list[index]["label"]
         name = self.items_list[index]["name"]
         image = Image.open(image_path).convert('RGB')
-        width, height = image.size
+        self.width, self.height = image.size
         mask = Image.open(mask_path)
 
-        resize = transforms.Resize(
-            size=(512, 512), interpolation=Image.NEAREST)
-        image = resize(image)
-        mask = resize(mask)
+        if (self.split == "val" or self.split == "test"):
+            image = self.image_padding(image)
+            mask = self.image_padding(mask)
 
-        if self.split == "train":
+        elif self.split == "train":
+            resize = transforms.Resize(self.image_resize(image), interpolation=Image.NEAREST)
+            image = resize(image)
+            mask = resize(mask)
+
             # we used this instead of TF.random_crop becasue the cropping parameters
             # should be the same for both image and mask
             i, j, h, w = transforms.RandomCrop.get_params(
@@ -98,9 +127,8 @@ class Atlantis(Dataset):
 
         if self.transform:
             image = self.transform(image)
-            # mask = mask.resize((500, 500), resample=Image.NEAREST)
-            # mask = torch.from_numpy(np.array(mask))
-        return image, mask, name, width, height
+
+        return image, mask, name, self.width, self.height
 
     def __len__(self):
         return len(self.items_list)
@@ -129,15 +157,15 @@ data_transforms = {
 }
 
 # Hyper-parameters
-num_workers = 2
-batch_size = 4
+num_workers = 1
+batch_size = 2
 num_epochs = 100
 learning_rate = 1e-7
 
 image_datasets = {x: Atlantis(split=x, transform=data_transforms[x])
                   for x in ['train', 'val', 'test']}
 dataloaders = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True,
-                             num_workers=num_workers, drop_last=True) for x in ['train', 'val', 'test']}
+                             num_workers=num_workers, drop_last=False) for x in ['train', 'val', 'test']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val', 'test']}
 
 # CHECKING THE IMAGES AND MASKS
@@ -157,26 +185,25 @@ def colorize_mask(mask):
     new_mask.putpalette(palette)
     return new_mask
 
-# print(f"length of the data: {len(dataloaders['val']) * batch_size}")
-# dataiter = iter(dataloaders['val'])
+# print(f"length of the data: {len(dataloaders['train']) * batch_size}")
+# dataiter = iter(dataloaders['train'])
 # images, labels, names, w, h = dataiter.next()
 # print("images: (batch size, channels, Height, Width)")
-# print(images.size(), images.dtype)
-# print(images.max(), images.min())
+# print(f"image feeder: {images.size(), images.dtype}")
+# # print(images.max(), images.min())
 # print(names)
 # print(w, h)
 # imshow(images[0])
 
-# exit()
-
 # print("masks: (batch size, Height, Width)")
-# print(labels.size(), labels.dtype)
-# print(labels.max(), labels.min())
-# print(np.unique(labels.numpy())) # set batch_size to 1
-# print(labels)
+# print(f"mask feeder: {labels.size(), labels.dtype}")
+# # print(labels.max(), labels.min())
+# # print(np.unique(labels.numpy())) # set batch_size to 1
+# # print(labels)
 
-# imshow(images[12])
-# colorize_mask(labels[12]).show()
+# # imshow(images[0])
+# colorize_mask(labels[0]).show()
+# exit()
 
 # TRAINING
 def csv_writer(log_list, fieldnames, model_name):
@@ -356,7 +383,7 @@ model.classifier = DeepLabHead(2048, 56)
 # checkpoint = torch.load(FILE)
 # model.load_state_dict(checkpoint['model_state'])
 
-# model.to(device)
+model.to(device)
 
 # criterion = nn.CrossEntropyLoss(ignore_index=255)
 criterion = Focalloss(num_classes=56, gamma=2, ignore_index=255)
@@ -431,9 +458,11 @@ def save_mask(mbatch, names, width, height, flag="gt"):
             name = names[indx].split(".")[0] + "_gt.png"    
         else:
             mask = Image.fromarray(mask.astype(np.uint8))
-            mask = mask.resize((width[indx].item(), height[indx].item()), resample=Image.NEAREST)
+            # mask = mask.resize((width[indx].item(), height[indx].item()), resample=Image.NEAREST)
+            mask = mask.crop((0, 0, width[indx].item(), height[indx].item()))
             name = names[indx].split(".")[0] + "_pred.png"
-            path = f"./models/{model_name}/predictions"  
+            path = f"./models/{model_name}/predictions"
+        print(f"{path}/{name}")  
         mask.save(f"{path}/{name}")
 
 # acc = 0
@@ -443,7 +472,8 @@ def save_mask(mbatch, names, width, height, flag="gt"):
 # running_corrects = 0
 with torch.no_grad():
     for images, labels, names, w, h in dataloaders[phase]:
-    
+        
+        # imshow(images[0])
         # imsave(images, names)
         # save_mask(labels, names)
 
@@ -456,7 +486,6 @@ with torch.no_grad():
         # max returns (value ,index)
         _, preds = torch.max(outputs['out'], 1)
         preds = preds.to('cpu')
-
         save_mask(preds, names, w, h, flag="pred")
 
     #     running_corrects += torch.sum(preds == labels)
@@ -474,7 +503,7 @@ with torch.no_grad():
     # print(f"fwavacc: {100 * fwavacc / len(dataloaders[phase]):.4f}")
 
     # dataiter = iter(dataloaders[phase])
-    # images, labels, names = dataiter.next()
+    # images, labels, names, w, h = dataiter.next()
     
     # imshow(images[0])
     # colorize_mask(labels[0]).show()
