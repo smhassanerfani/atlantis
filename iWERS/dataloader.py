@@ -106,7 +106,7 @@ class Atlantis(Dataset):
             # we used this instead of TF.random_crop becasue the cropping parameters
             # should be the same for both image and mask
             i, j, h, w = transforms.RandomCrop.get_params(
-                image, output_size=(256, 256))
+                image, output_size=(512, 512))
             image = TF.crop(image, i, j, h, w)
             mask = TF.crop(mask, i, j, h, w)
 
@@ -157,17 +157,16 @@ data_transforms = {
 }
 
 # Hyper-parameters
-num_workers = 1
+num_workers = 2
 batch_size = 2
 num_epochs = 100
-learning_rate = 1e-7
+learning_rate = 1e-6
 
 image_datasets = {x: Atlantis(split=x, transform=data_transforms[x])
                   for x in ['train', 'val', 'test']}
 dataloaders = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True,
-                             num_workers=num_workers, drop_last=False) for x in ['train', 'val', 'test']}
+                             num_workers=num_workers, drop_last=True) for x in ['train', 'val', 'test']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val', 'test']}
-
 # CHECKING THE IMAGES AND MASKS
 
 def imshow(inp, title="Image"):
@@ -350,8 +349,8 @@ def train_model(model, model_name, criterion, optimizer, scheduler, num_epochs=2
                         # "scheduler_state": scheduler.state_dict(),
                         "best_acc": epoch_acc,
                     }
-                    # save_path = f"./models/{model_name}/model.pth"
-                    # torch.save(state, save_path)
+                    save_path = f"./models/{model_name}/model.pth"
+                    torch.save(state, save_path)
 
         print()
 
@@ -368,7 +367,7 @@ def train_model(model, model_name, criterion, optimizer, scheduler, num_epochs=2
 
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 
-model_name = "deeplabv3_resnet50_ndata"
+model_name = "deeplabv3_resnet101"
 
 import os
 try:
@@ -376,7 +375,7 @@ try:
 except FileExistsError:
     pass
 
-model = models.segmentation.deeplabv3_resnet50(pretrained=True, progress=True)
+model = models.segmentation.deeplabv3_resnet101(pretrained=True, progress=True)
 model.classifier = DeepLabHead(2048, 56)
 
 # FILE = "./models/deeplabv3_resnet50/model.pth"
@@ -392,101 +391,101 @@ criterion = Focalloss(num_classes=56, gamma=2, ignore_index=255)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 # scheduler = lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
-# model = train_model(model, model_name, criterion, optimizer,
-#                     scheduler=None, num_epochs=num_epochs)
+model = train_model(model, model_name, criterion, optimizer,
+                    scheduler=None, num_epochs=num_epochs)
 
 ############################################ TESTING PART ###################################
-phase = 'val'
-FILE = f"./models/{model_name}/model.pth"
-# it takes the loaded dictionary, not the path file itself
-checkpoint = torch.load(FILE)
-model.load_state_dict(checkpoint['model_state'])
-# optimizer.load_state_dict(checkpoint['optimizer_state'])
-# scheduler.load_state_dict(checkpoint['scheduler_state'])
-epoch = checkpoint['epoch']
+# phase = 'val'
+# FILE = f"./models/{model_name}/model.pth"
+# # it takes the loaded dictionary, not the path file itself
+# checkpoint = torch.load(FILE)
+# model.load_state_dict(checkpoint['model_state'])
+# # optimizer.load_state_dict(checkpoint['optimizer_state'])
+# # scheduler.load_state_dict(checkpoint['scheduler_state'])
+# epoch = checkpoint['epoch']
 
-model.to(device)
-model.eval()
+# model.to(device)
+# model.eval()
 
-def _fast_hist(label_true, label_pred, n_class):
-    mask = (label_true > 0) & (label_true < n_class)
-    hist = np.bincount(n_class * label_true[mask].astype(
-        int) + label_pred[mask], minlength=n_class ** 2).reshape(n_class, n_class)
-    return hist
+# def _fast_hist(label_true, label_pred, n_class):
+#     mask = (label_true > 0) & (label_true < n_class)
+#     hist = np.bincount(n_class * label_true[mask].astype(
+#         int) + label_pred[mask], minlength=n_class ** 2).reshape(n_class, n_class)
+#     return hist
 
 
-def label_accuracy_score(label_trues, label_preds, n_class=56):
-    """Returns accuracy score evaluation result.
-      - overall accuracy
-      - mean accuracy
-      - mean IU
-      - fwavacc
-    """
-    hist = np.zeros((n_class, n_class))
-    for lt, lp in zip(label_trues, label_preds):
-        hist += _fast_hist(lt.flatten(), lp.flatten(), n_class)
-    acc = np.diag(hist).sum() / hist.sum()
-    with np.errstate(divide='ignore', invalid='ignore'):
-        acc_cls = np.diag(hist) / hist.sum(axis=1)
-    acc_cls = np.nanmean(acc_cls)
-    with np.errstate(divide='ignore', invalid='ignore'):
-        iu = np.diag(hist) / (
-            hist.sum(axis=1) + hist.sum(axis=0) - np.diag(hist)
-        )
-    mean_iu = np.nanmean(iu)
-    freq = hist.sum(axis=1) / hist.sum()
-    fwavacc = (freq[freq > 0] * iu[freq > 0]).sum()
-    return (acc, acc_cls, mean_iu, fwavacc)
+# def label_accuracy_score(label_trues, label_preds, n_class=56):
+#     """Returns accuracy score evaluation result.
+#       - overall accuracy
+#       - mean accuracy
+#       - mean IU
+#       - fwavacc
+#     """
+#     hist = np.zeros((n_class, n_class))
+#     for lt, lp in zip(label_trues, label_preds):
+#         hist += _fast_hist(lt.flatten(), lp.flatten(), n_class)
+#     acc = np.diag(hist).sum() / hist.sum()
+#     with np.errstate(divide='ignore', invalid='ignore'):
+#         acc_cls = np.diag(hist) / hist.sum(axis=1)
+#     acc_cls = np.nanmean(acc_cls)
+#     with np.errstate(divide='ignore', invalid='ignore'):
+#         iu = np.diag(hist) / (
+#             hist.sum(axis=1) + hist.sum(axis=0) - np.diag(hist)
+#         )
+#     mean_iu = np.nanmean(iu)
+#     freq = hist.sum(axis=1) / hist.sum()
+#     fwavacc = (freq[freq > 0] * iu[freq > 0]).sum()
+#     return (acc, acc_cls, mean_iu, fwavacc)
 
-import operator
-from itertools import starmap
+# import operator
+# from itertools import starmap
 
-def imsave(ibatch, names, title="Image"):
-    for indx, image in enumerate(ibatch):
-        image = image.numpy().transpose((1, 2, 0))
-        image = np.array([[[0.229, 0.224, 0.225]]]) * image + np.array([[[0.485, 0.456, 0.406]]])
-        image = np.clip(image, 0, 1)
-        plt.imshow(image)
-        plt.savefig(names[indx])
+# def imsave(ibatch, names, title="Image"):
+#     for indx, image in enumerate(ibatch):
+#         image = image.numpy().transpose((1, 2, 0))
+#         image = np.array([[[0.229, 0.224, 0.225]]]) * image + np.array([[[0.485, 0.456, 0.406]]])
+#         image = np.clip(image, 0, 1)
+#         plt.imshow(image)
+#         plt.savefig(names[indx])
 
-def save_mask(mbatch, names, width, height, flag="gt"):
-    for indx, mask in enumerate(mbatch):
-        mask = mask.numpy()
-        if flag == "gt":
-            mask = Image.fromarray(mask.astype(np.uint8)).convert('P')
-            mask.putpalette(palette)
-            name = names[indx].split(".")[0] + "_gt.png"    
-        else:
-            mask = Image.fromarray(mask.astype(np.uint8))
-            # mask = mask.resize((width[indx].item(), height[indx].item()), resample=Image.NEAREST)
-            mask = mask.crop((0, 0, width[indx].item(), height[indx].item()))
-            name = names[indx].split(".")[0] + "_pred.png"
-            path = f"./models/{model_name}/predictions"
-        print(f"{path}/{name}")  
-        mask.save(f"{path}/{name}")
+# def save_mask(mbatch, names, width, height, flag="gt"):
+#     for indx, mask in enumerate(mbatch):
+#         mask = mask.numpy()
+#         if flag == "gt":
+#             mask = Image.fromarray(mask.astype(np.uint8)).convert('P')
+#             mask.putpalette(palette)
+#             name = names[indx].split(".")[0] + "_gt.png"    
+#         else:
+#             mask = Image.fromarray(mask.astype(np.uint8))
+#             # mask = mask.resize((width[indx].item(), height[indx].item()), resample=Image.NEAREST)
+#             mask = mask.crop((0, 0, width[indx].item(), height[indx].item()))
+#             name = names[indx].split(".")[0] + "_pred.png"
+#             path = f"./models/{model_name}/predictions"
+#         print(f"{path}/{name}")  
+#         mask.save(f"{path}/{name}")
 
-# acc = 0
-# acc_cls = 0
-# mean_iu = 0
-# fwavacc = 0
-# running_corrects = 0
-with torch.no_grad():
-    for images, labels, names, w, h in dataloaders[phase]:
+# # acc = 0
+# # acc_cls = 0
+# # mean_iu = 0
+# # fwavacc = 0
+# # running_corrects = 0
+# with torch.no_grad():
+#     for images, labels, names, w, h in dataloaders[phase]:
         
-        # imshow(images[0])
-        # imsave(images, names)
-        # save_mask(labels, names)
+#         # imshow(images[0])
+#         # imsave(images, names)
+#         # save_mask(labels, names)
 
-        labels = labels - 1
-        labels [labels == -1] = 255
-        images = images.to(device)
-        # labels = labels.to(device)
+#         labels = labels - 1
+#         labels [labels == -1] = 255
+#         images = images.to(device)
+#         # labels = labels.to(device)
 
-        outputs = model(images)
-        # max returns (value ,index)
-        _, preds = torch.max(outputs['out'], 1)
-        preds = preds.to('cpu')
-        save_mask(preds, names, w, h, flag="pred")
+#         outputs = model(images)
+#         # max returns (value ,index)
+#         _, preds = torch.max(outputs['out'], 1)
+#         preds = preds.to('cpu')
+#         save_mask(preds, names, w, h, flag="pred")
 
     #     running_corrects += torch.sum(preds == labels)
     #     labels = labels.numpy()
