@@ -3,9 +3,11 @@
 venv="/home/serfani/Documents/venv/bin/activate";
 source ${venv};
 
-dir="/home/serfani/Downloads/atlantis/natural";
+dir="/home/serfani/Downloads/appendix/raw";
 sdirs=$(echo $(ls ${dir}));
 
 for sdir in ${sdirs}; do
-	python class_count.py ${dir}/${sdir};
+	python color2id.py ${dir}/${sdir};
+	python labels_counter.py ${dir}/${sdir};
+
 done

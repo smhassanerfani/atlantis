@@ -16,7 +16,7 @@ def func(path):
     return class_array
 
 
-def main(func, path, subdir="masks"):
+def main(func, path, subdir="SegmentationID"):
     result = func(os.path.join(path, subdir))
     np.savetxt(f'{path}/class_frequency.csv', result, delimiter=',')
 
