@@ -23,10 +23,9 @@ for i in "${!sdirs[@]}"; do
 	cat ${dir}/${sdir}_images.txt | tail -n ${ntest} > ${dir}/${sdir}_test_images.txt
 	cat ${dir}/${sdir}_images.txt | head -n -${ntest}| tail -n ${nval} > ${dir}/${sdir}_val_images.txt
 
-	rsync --files-from=${dir}/${sdir}_train_images.txt ${dir}/${sdir} ${ddir}/${sdir}/train_images
-	rsync --files-from=${dir}/${sdir}_test_images.txt ${dir}/${sdir} ${ddir}/${sdir}/test_images
-	rsync --files-from=${dir}/${sdir}_val_images.txt ${dir}/${sdir} ${ddir}/${sdir}/val_images
-done
+	rsync --files-from=${dir}/${sdir}_train_images.txt ${dir}/${sdir} ${ddir}/train/${sdir}
+	rsync --files-from=${dir}/${sdir}_test_images.txt ${dir}/${sdir} ${ddir}/test/${sdir}
+	rsync --files-from=${dir}/${sdir}_val_images.txt ${dir}/${sdir} ${ddir}/val/${sdir}
 
 
 
