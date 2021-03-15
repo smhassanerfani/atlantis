@@ -24,7 +24,7 @@ secret = 'f35c6f99121e3e83'
 # natural_list = list(filter(None, natural_list))
 # artificial_list = list(filter(None, artificial_list))
 
-labels_list = ["ship", "reservoir", "reservoir, dam", "reservoir, california"]
+labels_list = ["lake"]
 
 licenses = [
     {"url": "http://creativecommons.org/licenses/by-nc-sa/2.0/",
@@ -48,6 +48,11 @@ licenses = [
 # os.chdir('/home/serfani/Downloads/new_dataset')
 # root_path = os.getcwd()
 root_path = '/home/serfani/Downloads/new_dataset'
+
+try:
+    os.makedirs(root_path)
+except FileExistsError:
+    pass
 
 for label in labels_list:
     try:
