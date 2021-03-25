@@ -184,8 +184,8 @@ def colorize_mask(mask):
     new_mask.putpalette(palette)
     return new_mask
 
-# print(f"length of the data: {len(dataloaders['train']) * batch_size}")
-# dataiter = iter(dataloaders['train'])
+# print(f"length of the data: {len(dataloaders['val']) * batch_size}")
+# dataiter = iter(dataloaders['val'])
 # images, labels, names, w, h = dataiter.next()
 # print("images: (batch size, channels, Height, Width)")
 # print(f"image feeder: {images.size(), images.dtype}")
