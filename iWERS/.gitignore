@@ -1,4 +1,6 @@
+__pycache__/
 venv/
 models/*/*.pth
 data/CamVid
 data/cityscapes
+
