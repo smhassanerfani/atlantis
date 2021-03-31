@@ -130,6 +130,15 @@ def train_model(model, criterion, optimizer, scheduler=None, num_epochs=30):
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
+                state = {
+                    "epoch": epoch,
+                    "model_state": model.state_dict(),
+                    "optimizer_state": optimizer.state_dict(),
+                    # "scheduler_state": scheduler.state_dict(),
+                    "best_acc": epoch_acc,
+                }
+                save_path = f"./models/ResNet18/model.pth"
+                torch.save(state, save_path)
 
         print()
 
@@ -145,8 +154,10 @@ def train_model(model, criterion, optimizer, scheduler=None, num_epochs=30):
 
 #### Finetuning the convnet ####
 # Load a pretrained model and reset final fully connected layer.
+from torchsummary import summary
 
 model = models.resnet18(pretrained=True)
+
 num_ftrs = model.fc.in_features
 # Here the size of each output sample is set to 2.
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
@@ -171,7 +182,7 @@ optimizer = optim.SGD(model.parameters(), lr=2.5e-4,
 
 # step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-model = train_model(model, criterion, optimizer, num_epochs=30)
+# model = train_model(model, criterion, optimizer, num_epochs=30)
 
 
 #### ConvNet as fixed feature extractor ####
@@ -198,3 +209,74 @@ model = train_model(model, criterion, optimizer, num_epochs=30)
 
 # model_conv = train_model(model_conv, criterion, optimizer_conv,
 #                          exp_lr_scheduler, num_epochs=25)
+
+
+phase = 'val'
+FILE = f"./models/ResNet18/model.pth"
+# it takes the loaded dictionary, not the path file itself
+checkpoint = torch.load(FILE)
+model.load_state_dict(checkpoint['model_state'])
+# optimizer.load_state_dict(checkpoint['optimizer_state'])
+# scheduler.load_state_dict(checkpoint['scheduler_state'])
+epoch = checkpoint['epoch']
+
+model.to(device)
+model.eval()
+
+from PIL import Image
+# pic = Image.open('./data/atex/val/delta/28981184021.x000.y352.jpg')
+# pic = pic.resize((256, 256), resample=Image.BICUBIC)
+# pic.show()
+# exit()
+
+tensor = model.conv1.weight.clone()
+tensor = tensor.cpu()
+
+# tensor1 = tensor[6].detach().numpy()
+# tensor1 = tensor1.transpose((1, 2, 0))
+# mean = np.mean(tensor1, axis=tuple(range(tensor1.ndim - 1)))
+# std = np.std(tensor1, axis=tuple(range(tensor1.ndim - 1)))
+# print(mean)
+# print(std)
+# tensor1 = (tensor1 - mean) / std
+# # print(tensor1)
+# filter1 = Image.fromarray(tensor1.astype(np.uint8))
+
+# # PIL.Image.NEAREST (use nearest neighbour)
+# # PIL.Image.BILINEAR (linear interpolation)
+# # PIL.Image.BICUBIC (cubic spline interpolation)
+# filter1 = filter1.resize((28, 28), resample=Image.BICUBIC)
+# filter1.show()
+
+# exit()
+
+
+def visTensor(tensor, ch=0, allkernels=False, nrow=8, padding=1):
+    n, c, w, h = tensor.shape
+
+    if allkernels:
+        tensor = tensor.view(n * c, -1, w, h)
+    elif c != 3:
+        tensor = tensor[:, ch, :, :].unsqueeze(dim=1)
+
+    rows = np.min((tensor.shape[0] // nrow + 1, 64))
+    grid = torchvision.utils.make_grid(
+        tensor, nrow=nrow, normalize=True, padding=padding)
+    plt.figure(figsize=(nrow, rows))
+    plt.imshow(grid.detach().numpy().transpose((1, 2, 0)))
+
+    plt.axis('off')
+    plt.ioff()
+    plt.show()
+
+# if __name__ == "__main__":
+#     filter = model_conv.layer1[0].conv1.weight.clone()
+#     print(filter.shape)
+#     visTensor(filter.cpu(), ch=0, allkernels=False)
+
+#     plt.axis('off')
+#     plt.ioff()
+#     plt.show()
+
+
+visTensor(tensor.cpu())
