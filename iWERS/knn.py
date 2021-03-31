@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage import io
+from skimage.feature import local_binary_pattern
 import os
 
 plt.rcParams['figure.figsize'] = (10.0, 8.0)  # set default size of plots
@@ -10,6 +12,7 @@ plt.rcParams['image.cmap'] = 'gray'
 rootdir = "./data/atex/"
 xatex = {}
 yatex = {}
+
 xatex["train"] = np.zeros([8753, 32, 32, 3])
 xatex["val"] = np.zeros([1252, 32, 32, 3])
 xatex["test"] = np.zeros([2498, 32, 32, 3])
@@ -30,7 +33,10 @@ for path in atex_sets:
         for image in files:
             # print(idx)
             if image.endswith(".jpg"):
-                xatex[path][idx] = plt.imread(os.path.join(root, image))
+                xatex[path][idx] = io.imread(
+                    os.path.join(root, image), as_gray=False)
+                # print(xatex[path][idx])
+                # exit()
                 yatex[path][idx] = counter
                 idx += 1
         counter += 1
@@ -46,25 +52,19 @@ y_test = yatex["test"].astype(int) - 1
 classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
            'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
 num_classes = len(classes)
-# samples_per_class = 7
-# for y, cls in enumerate(classes):
-#     idxs = np.flatnonzero(y_train == y)
-#     idxs = np.random.choice(idxs, samples_per_class, replace=False)
-#     for i, idx in enumerate(idxs):
-#         plt_idx = i * num_classes + y + 1
-#         plt.subplot(samples_per_class, num_classes, plt_idx)
-#         plt.imshow(X_train[idx].astype('uint8'))
-#         plt.axis('off')
-#         if i == 0:
-#             plt.title(cls)
-# plt.show()
+samples_per_class = 7
+for y, cls in enumerate(classes):
+    idxs = np.flatnonzero(y_train == y)
+    idxs = np.random.choice(idxs, samples_per_class, replace=False)
+    for i, idx in enumerate(idxs):
+        plt_idx = i * num_classes + y + 1
+        plt.subplot(samples_per_class, num_classes, plt_idx)
+        plt.imshow(X_train[idx].astype('uint8'))
+        plt.axis('off')
+        if i == 0:
+            plt.title(cls)
+plt.show()
 
-
-from skimage.feature import local_binary_pattern
-
-METHOD = 'uniform'
-radius = 2
-n_points = 8 * radius
 
 X_train = np.reshape(X_train, (X_train.shape[0], -1))
 X_val = np.reshape(X_val, (X_val.shape[0], -1))
