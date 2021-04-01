@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage import io
+from skimage.feature import local_binary_pattern
 import os
 
 plt.rcParams['figure.figsize'] = (10.0, 8.0)  # set default size of plots
@@ -10,14 +12,24 @@ plt.rcParams['image.cmap'] = 'gray'
 rootdir = "./data/atex/"
 xatex = {}
 yatex = {}
-xatex["train"] = np.zeros([8753, 32, 32, 3])
-xatex["val"] = np.zeros([1252, 32, 32, 3])
-xatex["test"] = np.zeros([2498, 32, 32, 3])
+lbp = {}
+
+xatex["train"] = np.zeros([8753, 32, 32])
+xatex["val"] = np.zeros([1252, 32, 32])
+xatex["test"] = np.zeros([2498, 32, 32])
+
+lbp["train"] = np.zeros([8753, 32, 32])
+lbp["val"] = np.zeros([1252, 32, 32])
+lbp["test"] = np.zeros([2498, 32, 32])
 
 yatex["train"] = np.zeros(8753)
 yatex["val"] = np.zeros(1252)
 yatex["test"] = np.zeros(2498)
 
+
+METHOD = 'uniform'
+radius = 2
+n_points = 8 * radius
 
 atex_sets = ["train", "val", "test"]
 
@@ -30,17 +42,20 @@ for path in atex_sets:
         for image in files:
             # print(idx)
             if image.endswith(".jpg"):
-                xatex[path][idx] = plt.imread(os.path.join(root, image))
+                xatex[path][idx] = io.imread(
+                    os.path.join(root, image), as_gray=True)
+                lbp[path][idx] = local_binary_pattern(
+                    xatex[path][idx], n_points, radius, METHOD)
                 yatex[path][idx] = counter
                 idx += 1
         counter += 1
 
 
-X_train = xatex["train"]
+X_train = lbp["train"]
 y_train = yatex["train"].astype(int) - 1
-X_val = xatex["val"]
+X_val = lbp["val"]
 y_val = yatex["val"].astype(int) - 1
-X_test = xatex["test"]
+X_test = lbp["test"]
 y_test = yatex["test"].astype(int) - 1
 
 classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
@@ -53,22 +68,16 @@ num_classes = len(classes)
 #     for i, idx in enumerate(idxs):
 #         plt_idx = i * num_classes + y + 1
 #         plt.subplot(samples_per_class, num_classes, plt_idx)
-#         plt.imshow(X_train[idx].astype('uint8'))
+#         plt.imshow(X_train[idx])
 #         plt.axis('off')
 #         if i == 0:
 #             plt.title(cls)
 # plt.show()
 
 
-from skimage.feature import local_binary_pattern
-
-METHOD = 'uniform'
-radius = 2
-n_points = 8 * radius
-
-X_train = np.reshape(X_train, (X_train.shape[0], -1))
-X_val = np.reshape(X_val, (X_val.shape[0], -1))
-print(X_train.shape, X_val.shape)
+# X_train = np.reshape(X_train, (X_train.shape[0], -1))
+# X_val = np.reshape(X_val, (X_val.shape[0], -1))
+# print(X_train.shape, X_val.shape)
 
 
 from classifiers import KNearestNeighbor
@@ -79,10 +88,12 @@ from classifiers import KNearestNeighbor
 classifier = KNearestNeighbor()
 classifier.train(X_train, y_train)
 
-dists = classifier.compute_distances_no_loops(X_val)
+# dists = classifier.compute_distances_no_loops(X_val)
+# dists = classifier.compute_distances_two_loops(X_val)
+
 
 # num_folds = 5
-k_choices = [1, 3, 5, 8, 10, 12, 15, 20, 50, 100]
+k_choices = [1, 3, 5, 8]
 
 # X_train_folds = []
 # y_train_folds = []
@@ -123,7 +134,7 @@ for k in k_choices:
 
     # use of k-nearest-neighbor algorithm
     classifier.train(X_train, y_train)
-    y_pred = classifier.predict(X_val, k=k, num_loops=0)
+    y_pred = classifier.predict(X_val, k=k, num_loops=2)
 
     # Compute the fraction of correctly predicted examples
     num_correct = np.sum(y_pred == y_val)

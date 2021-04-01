@@ -9,7 +9,7 @@ class KNearestNeighbor(object):
 
   def train(self, X, y):
     """
-    Train the classifier. For k-nearest neighbors this is just 
+    Train the classifier. For k-nearest neighbors this is just
     memorizing the training data.
 
     Inputs:
@@ -34,7 +34,7 @@ class KNearestNeighbor(object):
 
     Returns:
     - y: A numpy array of shape (num_test,) containing predicted labels for the
-      test data, where y[i] is the predicted label for the test point X[i].  
+      test data, where y[i] is the predicted label for the test point X[i].
     """
     if num_loops == 0:
       dists = self.compute_distances_no_loops(X)
@@ -46,6 +46,12 @@ class KNearestNeighbor(object):
       raise ValueError('Invalid value %d for num_loops' % num_loops)
 
     return self.predict_labels(dists, k=k)
+
+  def kullback_leibler_divergence(self, p, q):
+    p = np.asarray(p)
+    q = np.asarray(q)
+    filt = np.logical_and(p != 0, q != 0)
+    return np.sum(p[filt] * np.log2(p[filt] / q[filt]))
 
   def compute_distances_two_loops(self, X):
     """
@@ -72,7 +78,15 @@ class KNearestNeighbor(object):
         # training point, and store the result in dists[i, j]. You should   #
         # not use a loop over dimension.                                    #
         #####################################################################
-        dists[i][j] = np.sqrt(np.sum((X[i] - self.X_train[j])**2))
+        n_bins = int(X[i].max() + 1)
+        hist, _ = np.histogram(
+            X[i], density=True, bins=n_bins, range=(0, n_bins))
+        ref_hist, _ = np.histogram(
+            self.X_train[j], density=True, bins=n_bins, range=(0, n_bins))
+        dists[i][j] = self.kullback_leibler_divergence(hist, ref_hist)
+        # print(f"dists[{i}][{j}]")
+
+        # dists[i][j] = np.sqrt(np.sum((X[i] - self.X_train[j])**2))
         #####################################################################
         #                       END OF YOUR CODE                            #
         #####################################################################
