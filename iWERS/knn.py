@@ -79,7 +79,7 @@ from classifiers import KNearestNeighbor
 classifier = KNearestNeighbor()
 classifier.train(X_train, y_train)
 
-dists = classifier.compute_distances_no_loops(X_val)
+# dists = classifier.compute_distances_no_loops(X_val)
 
 # num_folds = 5
 k_choices = [1, 3, 5, 8, 10, 12, 15, 20, 50, 100]
