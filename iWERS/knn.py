@@ -28,7 +28,7 @@ yatex["test"] = np.zeros(2498)
 
 
 METHOD = 'uniform'
-radius = 2
+radius = 3
 n_points = 8 * radius
 
 atex_sets = ["train", "val", "test"]
@@ -75,25 +75,62 @@ num_classes = len(classes)
 # plt.show()
 
 
-# X_train = np.reshape(X_train, (X_train.shape[0], -1))
-# X_val = np.reshape(X_val, (X_val.shape[0], -1))
+X_test = np.reshape(X_test, (X_test.shape[0], -1))
+X_val = np.reshape(X_val, (X_val.shape[0], -1))
 # print(X_train.shape, X_val.shape)
 
 
+def kullback_leibler_divergence(p, q):
+    p = np.asarray(p)
+    q = np.asarray(q)
+    filt = np.logical_and(p != 0, q != 0)
+    return np.sum(p[filt] * np.log2(p[filt] / q[filt]))
+
+
+def kullback_leibler_divergencev(p, q):
+    p = np.asarray(p)
+    q = np.asarray(q)
+    return np.sum(p * np.log2(p / q))
+
+
+n_bins = int(X_test.max() + 1)
+
+X = np.apply_along_axis(lambda x: np.histogram(
+    x, density=True, bins=n_bins, range=(0, n_bins))[0], 1, X_test)
+
+import time
+
+dists = np.zeros(X.shape[0])
+since = time.time()
+for i in range(X.shape[0]):
+    dists[i] = kullback_leibler_divergence(X[0], X[i])
+print(time.time() - since)
+print(dists.shape)
+print(dists[:20])
+
+X += 0.000001
+X = np.asarray(X)
+
+since = time.time()
+dists2 = np.sum(X[0] * np.log2(X[0] / X), axis=1)
+print(time.time() - since)
+print(dists2[:20])
+
+exit()
 from classifiers import KNearestNeighbor
 
 # Create a kNN classifier instance.
 # Remember that training a kNN classifier is a noop:
 # the Classifier simply remembers the data and does no further processing
 classifier = KNearestNeighbor()
-classifier.train(X_train, y_train)
+classifier.train(X_test, y_test)
 
 # dists = classifier.compute_distances_no_loops(X_val)
 # dists = classifier.compute_distances_two_loops(X_val)
 
 
 # num_folds = 5
-k_choices = [1, 3, 5, 8]
+k_choices = [1, 3, 5, 8, 10, 15, 20]
 
 # X_train_folds = []
 # y_train_folds = []
@@ -133,7 +170,7 @@ for k in k_choices:
     # y_train_fold = np.concatenate([ fold for j, fold in enumerate(y_train_folds) if i != j ])
 
     # use of k-nearest-neighbor algorithm
-    classifier.train(X_train, y_train)
+    classifier.train(X_test, y_test)
     y_pred = classifier.predict(X_val, k=k, num_loops=2)
 
     # Compute the fraction of correctly predicted examples

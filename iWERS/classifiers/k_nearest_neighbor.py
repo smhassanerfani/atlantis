@@ -70,6 +70,18 @@ class KNearestNeighbor(object):
     num_test = X.shape[0]
     num_train = self.X_train.shape[0]
     dists = np.zeros((num_test, num_train))
+    # n_bins = int(X.max() + 1)
+    # X = np.apply_along_axis(lambda x: np.histogram(
+    #     x, density=True, bins=n_bins, range=(0, n_bins))[0], 1, X)
+    # X += 0.00001
+    # X_train = np.apply_along_axis(lambda x: np.histogram(
+    #     x, density=True, bins=n_bins, range=(0, n_bins))[0], 1, self.X_train)
+    # X_train += 0.00001
+    # # with np.errstate(divide='ignore', invalid='ignore'):
+    # for i in range(num_test):
+    #   dists[i, :] = self.kullback_leibler_divergence(X[i], X_train)
+    #   # print(f"dists[{i}]")
+    # print(dists)
     for i in range(num_test):
       for j in range(num_train):
         #####################################################################
@@ -84,12 +96,13 @@ class KNearestNeighbor(object):
         ref_hist, _ = np.histogram(
             self.X_train[j], density=True, bins=n_bins, range=(0, n_bins))
         dists[i][j] = self.kullback_leibler_divergence(hist, ref_hist)
-        # print(f"dists[{i}][{j}]")
+        print(dists[i][j])
+        exit()
 
         # dists[i][j] = np.sqrt(np.sum((X[i] - self.X_train[j])**2))
-        #####################################################################
-        #                       END OF YOUR CODE                            #
-        #####################################################################
+    #####################################################################
+    #                       END OF YOUR CODE                            #
+    #####################################################################
     return dists
 
   def compute_distances_one_loop(self, X):
