@@ -4,7 +4,7 @@ venv="/home/serfani/Documents/venv/bin/activate";
 source ${venv};
 
 dir="/home/serfani/Downloads/atlantis_analysis";
-python spatial_analysis.py ${dir}/ship;
+python spatial_analysis.py ${dir}/pipeline;
 
 # sdirs=$(echo $(ls ${dir}));
 
