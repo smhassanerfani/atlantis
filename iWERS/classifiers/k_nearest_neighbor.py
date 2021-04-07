@@ -9,7 +9,7 @@ class KNearestNeighbor(object):
 
   def train(self, X, y):
     """
-    Train the classifier. For k-nearest neighbors this is just 
+    Train the classifier. For k-nearest neighbors this is just
     memorizing the training data.
 
     Inputs:
@@ -34,7 +34,7 @@ class KNearestNeighbor(object):
 
     Returns:
     - y: A numpy array of shape (num_test,) containing predicted labels for the
-      test data, where y[i] is the predicted label for the test point X[i].  
+      test data, where y[i] is the predicted label for the test point X[i].
     """
     if num_loops == 0:
       dists = self.compute_distances_no_loops(X)
@@ -46,6 +46,22 @@ class KNearestNeighbor(object):
       raise ValueError('Invalid value %d for num_loops' % num_loops)
 
     return self.predict_labels(dists, k=k)
+
+  def kullback_leibler_divergence(self, p, q):
+    p = np.asarray(p)
+    q = np.asarray(q)
+    # filt = np.logical_and(p != 0, q != 0)
+    return np.sum(p * np.log2(p / q), axis=1)
+
+  def chi_square_statistics(self, p, q):
+    p = np.asarray(p)
+    q = np.asarray(q)
+    return np.sum(((p - q) ** 2) / (p + q), axis=1)
+
+  def log_likelihood_statistics(self, p, q):
+    p = np.asarray(p)
+    q = np.asarray(q)
+    return - np.sum((p * np.log2(q)), axis=1)
 
   def compute_distances_two_loops(self, X):
     """
@@ -64,18 +80,39 @@ class KNearestNeighbor(object):
     num_test = X.shape[0]
     num_train = self.X_train.shape[0]
     dists = np.zeros((num_test, num_train))
+    n_bins = int(X.max() + 1)
+    X = np.apply_along_axis(lambda x: np.histogram(
+        x, density=True, bins=n_bins, range=(0, n_bins))[0], 1, X)
+    X += 0.000001
+    X_train = np.apply_along_axis(lambda x: np.histogram(
+        x, density=True, bins=n_bins, range=(0, n_bins))[0], 1, self.X_train)
+    X_train += 0.000001
+    # with np.errstate(divide='ignore', invalid='ignore'):
     for i in range(num_test):
-      for j in range(num_train):
-        #####################################################################
-        # TODO:                                                             #
-        # Compute the l2 distance between the ith test point and the jth    #
-        # training point, and store the result in dists[i, j]. You should   #
-        # not use a loop over dimension.                                    #
-        #####################################################################
-        dists[i][j] = np.sqrt(np.sum((X[i] - self.X_train[j])**2))
-        #####################################################################
-        #                       END OF YOUR CODE                            #
-        #####################################################################
+      dists[i, :] = self.chi_square_statistics(X[i], X_train)
+      # print(f"dists[{i}]")
+    # print(dists)
+    # for i in range(num_test):
+    #   for j in range(num_train):
+    #     #####################################################################
+    #     # TODO:                                                             #
+    #     # Compute the l2 distance between the ith test point and the jth    #
+    #     # training point, and store the result in dists[i, j]. You should   #
+    #     # not use a loop over dimension.                                    #
+    #     #####################################################################
+    #     n_bins = int(X[i].max() + 1)
+    #     hist, _ = np.histogram(
+    #         X[i], density=True, bins=n_bins, range=(0, n_bins))
+    #     ref_hist, _ = np.histogram(
+    #         self.X_train[j], density=True, bins=n_bins, range=(0, n_bins))
+    #     dists[i][j] = self.kullback_leibler_divergence(hist, ref_hist)
+    #     print(dists[i][j])
+    #     exit()
+
+      # dists[i][j] = np.sqrt(np.sum((X[i] - self.X_train[j])**2))
+    #####################################################################
+    #                       END OF YOUR CODE                            #
+    #####################################################################
     return dists
 
   def compute_distances_one_loop(self, X):
