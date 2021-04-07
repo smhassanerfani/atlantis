@@ -18,12 +18,7 @@ plt.rcParams['image.cmap'] = 'gray'
 rootdir = "./data/atex/"
 xatex = {}
 yatex = {}
-<<<<<<< HEAD
 
-xatex["train"] = np.zeros([8753, 32, 32, 3])
-xatex["val"] = np.zeros([1252, 32, 32, 3])
-xatex["test"] = np.zeros([2498, 32, 32, 3])
-=======
 lbp = {}
 kmeans_clustering = {}
 kmeans_clustering["data"] = []
@@ -41,7 +36,7 @@ else:
 lbp["train"] = np.zeros([8753, 32, 32])
 lbp["val"] = np.zeros([1252, 32, 32])
 lbp["test"] = np.zeros([2498, 32, 32])
->>>>>>> lbp
+
 
 yatex["train"] = np.zeros(8753)
 yatex["val"] = np.zeros(1252)
@@ -85,13 +80,6 @@ for path in atex_sets:
         for image in files:
             # print(idx)
             if image.endswith(".jpg"):
-<<<<<<< HEAD
-                xatex[path][idx] = io.imread(
-                    os.path.join(root, image), as_gray=False)
-                # print(xatex[path][idx])
-                # exit()
-                yatex[path][idx] = counter
-=======
                 xatex[path][idx] = img_as_float(
                     io.imread(os.path.join(root, image), as_gray=as_gray))
                 lbp[path][idx] = power(xatex[path][idx], kernel)
@@ -100,7 +88,6 @@ for path in atex_sets:
                     np.reshape(lbp[path][idx], -1))
                 kmeans_clustering["target"].append(counter - 1)
                 yatex[path][idx] = counter - 1
->>>>>>> lbp
                 idx += 1
         counter += 1
 
@@ -139,20 +126,7 @@ X_test = lbp["test"]
 classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
            'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
 num_classes = len(classes)
-<<<<<<< HEAD
-samples_per_class = 7
-for y, cls in enumerate(classes):
-    idxs = np.flatnonzero(y_train == y)
-    idxs = np.random.choice(idxs, samples_per_class, replace=False)
-    for i, idx in enumerate(idxs):
-        plt_idx = i * num_classes + y + 1
-        plt.subplot(samples_per_class, num_classes, plt_idx)
-        plt.imshow(X_train[idx].astype('uint8'))
-        plt.axis('off')
-        if i == 0:
-            plt.title(cls)
-plt.show()
-=======
+
 # samples_per_class = 7
 # for y, cls in enumerate(classes):
 #     idxs = np.flatnonzero(y_train == y)
@@ -160,12 +134,11 @@ plt.show()
 #     for i, idx in enumerate(idxs):
 #         plt_idx = i * num_classes + y + 1
 #         plt.subplot(samples_per_class, num_classes, plt_idx)
-#         plt.imshow(X_train[idx])
+#         plt.imshow(X_train[idx]) # .astype('uint8'))
 #         plt.axis('off')
 #         if i == 0:
 #             plt.title(cls)
 # plt.show()
->>>>>>> lbp
 
 
 X_train = np.reshape(X_train, (X_train.shape[0], -1))
@@ -222,10 +195,6 @@ classifier = KNearestNeighbor()
 # dists = classifier.compute_distances_no_loops(X_val)
 # dists = classifier.compute_distances_two_loops(X_val)
 
-<<<<<<< HEAD
-# dists = classifier.compute_distances_no_loops(X_val)
-=======
->>>>>>> lbp
 
 # num_folds = 5
 k_choices = [1, 3, 5, 8, 15, 50, 70, 100]
