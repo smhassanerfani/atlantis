@@ -30,8 +30,7 @@ def kernel3C(gkernel):
     return np.stack(arrays, axis=2)
 
 
-as_gray = True
-def power(image, kernel, norm=True, as_gray=as_gray):
+def power(image, kernel, norm=True, as_gray=True):
 
     if norm:
         image = image_normalization(image)
@@ -121,6 +120,8 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 # plt.show()
 
 # KNN analysis
+# loading data
+as_gray = False
 atex = dataloader("atex", as_gray=as_gray)
 # as_gray=True --> results are around 20%
 # as_gray=False --> results are around 10%
@@ -136,10 +137,10 @@ theta = (1 / 4.) * np.pi
 frequency = 0.3
 kernel = gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma)
 
-X_train = map(lambda x: power(x, kernel), X_train)
+X_train = map(lambda x: power(x, kernel, as_gray=as_gray), X_train)
 X_train = np.asarray(list(X_train))
 
-X_val = map(lambda x: power(x, kernel), X_val)
+X_val = map(lambda x: power(x, kernel, as_gray=as_gray), X_val)
 X_val = np.asarray(list(X_val))
 
 # lbp analysis
