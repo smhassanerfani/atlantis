@@ -30,7 +30,7 @@ def kernel3C(gkernel):
     return np.stack(arrays, axis=2)
 
 
-def power(image, kernel, norm=True, as_gray=True):
+def power(image, kernel, norm=False, as_gray=True):
 
     if norm:
         image = image_normalization(image)
@@ -72,7 +72,6 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
         dataset[set_]["target"] = np.asarray(dataset[set_]["target"])
 
     return dataset
-
 
 
 ############################# ANALYSIS #############################
@@ -121,9 +120,11 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 # axes.plot(np.arange(2, 16), inertia_list, 'o--')
 # plt.show()
 
+
 # KNN analysis
 # loading data
 as_gray = True
+norm = False
 atex = dataloader("atex", as_gray=as_gray)
 # as_gray=True --> results are around 20%
 # as_gray=False --> results are around 10%
@@ -133,21 +134,31 @@ y_train = atex["train"]["target"]
 X_val = atex["val"]["data"]
 y_val = atex["val"]["target"]
 
+
+# PCA
+# X_train = X_train.reshape(X_train.shape[0], -1)
+# X_val = X_val.reshape(X_val.shape[0], -1)
+
+# pca = PCA(n_components=100, random_state=88)
+# X_train = pca.fit_transform(X_train)
+# X_val = pca.fit_transform(X_val)
+
+
 # gabor analysis
 # sigma = 1
 # theta = (1 / 4.) * np.pi
-# frequency = 0.3
+# frequency = 0.01
 # kernel = gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma)
 
-# X_train = map(lambda x: power(x, kernel, as_gray=as_gray), X_train)
+# X_train = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_train)
 # X_train = np.asarray(list(X_train))
 
-# X_val = map(lambda x: power(x, kernel, as_gray=as_gray), X_val)
+# X_val = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_val)
 # X_val = np.asarray(list(X_val))
 
 # lbp analysis
 METHOD = 'uniform'
-radius = 2
+radius = 1
 n_points = 8 * radius
 
 X_train = map(lambda x: local_binary_pattern(
@@ -163,7 +174,7 @@ X_train = np.reshape(X_train, (X_train.shape[0], -1))
 X_val = np.reshape(X_val, (X_val.shape[0], -1))
 
 classifier = KNearestNeighbor()
-k_choices = [1, 3, 5, 8, 15, 50, 70, 100, 1000]
+k_choices = [1, 3, 5, 8, 15, 50, 70, 100, 200, 300, 500]
 k_to_accuracies = {}
 
 for k in k_choices:
@@ -171,7 +182,7 @@ for k in k_choices:
 
     # use of k-nearest-neighbor algorithm
     classifier.train(X_train, y_train)
-    y_pred = classifier.predict(X_val, k=k, method=3)
+    y_pred = classifier.predict(X_val, k=k, method=1)
 
     # Compute the fraction of correctly predicted examples
     num_correct = np.sum(y_pred == y_val)
