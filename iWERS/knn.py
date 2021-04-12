@@ -74,12 +74,14 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
     return dataset
 
 
+
 ############################# ANALYSIS #############################
 # visualization of patches
 # atex = dataloader("atex", as_gray=False)
 
-# classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
-#            'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
+# classes = ['waterfall', 'river', 'sea', 'wetland', 'delta', 'pool', 'puddle',
+#            'swamp', 'glaciers', 'lake', 'rapids', 'snow', 'estuary', 'flood', 'hot_spring']
+
 # num_classes = len(classes)
 
 # samples_per_class = 7
@@ -107,7 +109,7 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 # axes.scatter(x[:, 0], x[:, 1], c=atex["train"]["target"])
 # plt.show()
 
-# KMeans to evaluate the inetria
+# KMeans to evaluate the inetria # change the metric!
 # inertia_list = []
 # for k in range(2, 16):
 #     kmn = KMeans(n_clusters=k, random_state=88)
@@ -121,7 +123,7 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 
 # KNN analysis
 # loading data
-as_gray = False
+as_gray = True
 atex = dataloader("atex", as_gray=as_gray)
 # as_gray=True --> results are around 20%
 # as_gray=False --> results are around 10%
@@ -132,16 +134,16 @@ X_val = atex["val"]["data"]
 y_val = atex["val"]["target"]
 
 # gabor analysis
-sigma = 1
-theta = (1 / 4.) * np.pi
-frequency = 0.3
-kernel = gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma)
+# sigma = 1
+# theta = (1 / 4.) * np.pi
+# frequency = 0.3
+# kernel = gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma)
 
-X_train = map(lambda x: power(x, kernel, as_gray=as_gray), X_train)
-X_train = np.asarray(list(X_train))
+# X_train = map(lambda x: power(x, kernel, as_gray=as_gray), X_train)
+# X_train = np.asarray(list(X_train))
 
-X_val = map(lambda x: power(x, kernel, as_gray=as_gray), X_val)
-X_val = np.asarray(list(X_val))
+# X_val = map(lambda x: power(x, kernel, as_gray=as_gray), X_val)
+# X_val = np.asarray(list(X_val))
 
 # lbp analysis
 METHOD = 'uniform'
@@ -161,7 +163,7 @@ X_train = np.reshape(X_train, (X_train.shape[0], -1))
 X_val = np.reshape(X_val, (X_val.shape[0], -1))
 
 classifier = KNearestNeighbor()
-k_choices = [1, 3, 5, 8, 15, 50, 70, 100]
+k_choices = [1, 3, 5, 8, 15, 50, 70, 100, 1000]
 k_to_accuracies = {}
 
 for k in k_choices:
@@ -169,7 +171,7 @@ for k in k_choices:
 
     # use of k-nearest-neighbor algorithm
     classifier.train(X_train, y_train)
-    y_pred = classifier.predict(X_val, k=k, method=0)
+    y_pred = classifier.predict(X_val, k=k, method=3)
 
     # Compute the fraction of correctly predicted examples
     num_correct = np.sum(y_pred == y_val)
