@@ -182,8 +182,8 @@ class KNearestNeighbor(object):
     num_train = self.X_train.shape[0]
     dists = np.zeros((num_test, num_train))
     # expand equation (x-y)^2 = x^2 + y^2 - 2xy
-    dists = np.sum(X**2, axis=1, keepdims=True) + np.sum(self.X_train**2, axis=1) \
-        - 2 * np.matmul(X, self.X_train.T)
+    dists = np.sum(X**2, axis=1, keepdims=True) + np.sum(self.X_train **
+                                                         2, axis=1) - 2 * np.matmul(X, self.X_train.T)
     dists = np.sqrt(dists)
 
     return dists

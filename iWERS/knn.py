@@ -30,8 +30,7 @@ def kernel3C(gkernel):
     return np.stack(arrays, axis=2)
 
 
-as_gray = True
-def power(image, kernel, norm=True, as_gray=as_gray):
+def power(image, kernel, norm=False, as_gray=True):
 
     if norm:
         image = image_normalization(image)
@@ -79,8 +78,9 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 # visualization of patches
 # atex = dataloader("atex", as_gray=False)
 
-# classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
-#            'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
+# classes = ['waterfall', 'river', 'sea', 'wetland', 'delta', 'pool', 'puddle',
+#            'swamp', 'glaciers', 'lake', 'rapids', 'snow', 'estuary', 'flood', 'hot_spring']
+
 # num_classes = len(classes)
 
 # samples_per_class = 7
@@ -96,7 +96,8 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 #             plt.title(cls)
 # plt.show()
 
-# PCA to visualize first two eigenvectors of train data
+
+# # PCA to visualize first two eigenvectors of train data
 # atex = dataloader("atex", as_gray=True)
 # data = atex["train"]["data"].reshape(atex["train"]["data"].shape[0], -1)
 
@@ -108,7 +109,9 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 # axes.scatter(x[:, 0], x[:, 1], c=atex["train"]["target"])
 # plt.show()
 
-# KMeans to evaluate the inetria
+# exit()
+
+# # KMeans to evaluate the inetria  # change the metric!
 # inertia_list = []
 # for k in range(2, 16):
 #     kmn = KMeans(n_clusters=k, random_state=88)
@@ -118,9 +121,15 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 
 # fig, axes = plt.subplots(nrows=1, ncols=1)
 # axes.plot(np.arange(2, 16), inertia_list, 'o--')
+# plt.grid(True)
 # plt.show()
 
-# KNN analysis
+# exit()
+
+# # KNN analysis
+# # loading data
+as_gray = True
+norm = False
 atex = dataloader("atex", as_gray=as_gray)
 # as_gray=True --> results are around 20%
 # as_gray=False --> results are around 10%
@@ -130,37 +139,63 @@ y_train = atex["train"]["target"]
 X_val = atex["val"]["data"]
 y_val = atex["val"]["target"]
 
-# gabor analysis
+
+X_train = X_train.reshape(X_train.shape[0], -1)
+X_val = X_val.reshape(X_val.shape[0], -1)
+
+# # t-SNE
+from tsne import tsne
+import pylab
+import time
+
+since = time.time()
+Y = tsne(X_train, 2, 50, 20.0)
+np.savetxt('tsne.txt', Y, delimiter=',')
+time_elapsed = time.time() - since
+print('Training complete in {:.0f}m {:.0f}s'.format(
+    time_elapsed // 60, time_elapsed % 60))
+
+pylab.scatter(Y[:, 0], Y[:, 1], 20, y_train)
+pylab.show()
+
+exit()
+# # PCA
+# pca = PCA(n_components=100, random_state=88)
+# X_train = pca.fit_transform(X_train)
+# X_val = pca.fit_transform(X_val)
+
+
+# # gabor analysis
 sigma = 1
 theta = (1 / 4.) * np.pi
-frequency = 0.3
+frequency = 0.1
 kernel = gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma)
 
-X_train = map(lambda x: power(x, kernel), X_train)
+X_train = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_train)
 X_train = np.asarray(list(X_train))
 
-X_val = map(lambda x: power(x, kernel), X_val)
+X_val = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_val)
 X_val = np.asarray(list(X_val))
 
-# lbp analysis
-METHOD = 'uniform'
-radius = 2
-n_points = 8 * radius
+# # lbp analysis
+# METHOD = 'uniform'
+# radius = 3
+# n_points = 8 * radius
 
-X_train = map(lambda x: local_binary_pattern(
-    x, n_points, radius, METHOD), X_train)
-X_train = np.asarray(list(X_train))
+# X_train = map(lambda x: local_binary_pattern(
+#     x, n_points, radius, METHOD), X_train)
+# X_train = np.asarray(list(X_train))
 
-X_val = map(lambda x: local_binary_pattern(
-    x, n_points, radius, METHOD), X_val)
-X_val = np.asarray(list(X_val))
+# X_val = map(lambda x: local_binary_pattern(
+#     x, n_points, radius, METHOD), X_val)
+# X_val = np.asarray(list(X_val))
 
-#####################################
+####################################
 X_train = np.reshape(X_train, (X_train.shape[0], -1))
 X_val = np.reshape(X_val, (X_val.shape[0], -1))
 
 classifier = KNearestNeighbor()
-k_choices = [1, 3, 5, 8, 15, 50, 70, 100]
+k_choices = [1, 3, 5, 8, 15, 50, 70, 100, 200, 300, 500]
 k_to_accuracies = {}
 
 for k in k_choices:
@@ -168,7 +203,7 @@ for k in k_choices:
 
     # use of k-nearest-neighbor algorithm
     classifier.train(X_train, y_train)
-    y_pred = classifier.predict(X_val, k=k, method=0)
+    y_pred = classifier.predict(X_val, k=k, method=3)
 
     # Compute the fraction of correctly predicted examples
     num_correct = np.sum(y_pred == y_val)
@@ -178,4 +213,5 @@ for k in k_choices:
 # Print out the computed accuracies
 for k in sorted(k_to_accuracies):
     for accuracy in k_to_accuracies[k]:
-        print('k = %d, accuracy = %f' % (k, accuracy))
+        # print('k = %d, accuracy = %f' % (k, accuracy))
+        print('%d, %f' % (k, accuracy))
