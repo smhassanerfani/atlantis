@@ -1,4 +1,5 @@
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io
@@ -11,11 +12,11 @@ from skimage.feature import local_binary_pattern
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from classifiers import KNearestNeighbor
-
+from tsne import tsne
 
 plt.rcParams['figure.figsize'] = (10.0, 8.0)  # set default size of plots
 plt.rcParams['image.interpolation'] = 'nearest'
-plt.rcParams['image.cmap'] = 'gray'
+# plt.rcParams['image.cmap'] = 'gray'
 
 
 def image_normalization(image):
@@ -78,8 +79,8 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 # visualization of patches
 # atex = dataloader("atex", as_gray=False)
 
-# classes = ['waterfall', 'river', 'sea', 'wetland', 'delta', 'pool', 'puddle',
-#            'swamp', 'glaciers', 'lake', 'rapids', 'snow', 'estuary', 'flood', 'hot_spring']
+classes = ['waterfall', 'river', 'sea', 'wetland', 'delta', 'pool', 'puddle',
+           'swamp', 'glaciers', 'lake', 'rapids', 'snow', 'estuary', 'flood', 'hot_spring']
 
 # num_classes = len(classes)
 
@@ -128,7 +129,7 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
 
 # # KNN analysis
 # # loading data
-as_gray = True
+as_gray = False
 norm = False
 atex = dataloader("atex", as_gray=as_gray)
 # as_gray=True --> results are around 20%
@@ -144,18 +145,32 @@ X_train = X_train.reshape(X_train.shape[0], -1)
 X_val = X_val.reshape(X_val.shape[0], -1)
 
 # # t-SNE
-from tsne import tsne
-import pylab
-import time
+Y = np.loadtxt("tsne_val_10000.txt", delimiter=',')
+
+cidx = 0
+fig, ax = plt.subplots()
+for idx_, class_ in enumerate(classes):
+    idx = np.sum(idx_ == y_val)
+    cidx += idx
+    iidx = cidx - idx
+    # print(iidx, cidx)
+    ax.scatter(Y[iidx:cidx, 0],
+               Y[iidx:cidx:, 1], label=class_)
+ax.legend()
+ax.grid(True)
+
+plt.show()
+
 
 since = time.time()
-Y = tsne(X_train, 2, 50, 20.0)
+Y = tsne(X_val, 2, 50, 20.0)
 np.savetxt('tsne.txt', Y, delimiter=',')
 time_elapsed = time.time() - since
 print('Training complete in {:.0f}m {:.0f}s'.format(
     time_elapsed // 60, time_elapsed % 60))
 
-pylab.scatter(Y[:, 0], Y[:, 1], 20, y_train)
+pylab.scatter(Y[:, 0], Y[:, 1], c=y_val)
+pylab.legend(True)
 pylab.show()
 
 exit()
