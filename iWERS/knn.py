@@ -7,6 +7,7 @@ from skimage import io
 from scipy import ndimage as ndi
 from skimage.filters import gabor_kernel
 from skimage.feature import local_binary_pattern
+from skimage.color import rgb2hsv
 
 # from skimage.util import img_as_float
 from sklearn.cluster import KMeans
@@ -19,11 +20,18 @@ plt.rcParams['image.interpolation'] = 'nearest'
 # plt.rcParams['image.cmap'] = 'gray'
 
 
-def image_normalization(image):
-    # Normalize images separately across the three color channels.
-    mean = np.mean(image, axis=tuple(range(image.ndim - 1)))
-    std = np.std(image, axis=tuple(range(image.ndim - 1)))
-    return (image - mean) / std
+def image_normalization(dataset, as_gray=False):
+    # # Normalize images separately across the three color channels.
+    # mean = np.mean(image, axis=tuple(range(image.ndim - 1)))
+    # std = np.std(image, axis=tuple(range(image.ndim - 1)))
+    shape = dataset.shape
+    dataset = dataset.reshape(dataset.shape[0], -1)
+    dataset = dataset.astype(np.float)
+    dataset -= np.mean(dataset, axis=0)
+    dataset /= np.std(dataset, axis=0)
+    if as_gray:
+        return dataset.reshape(dataset.shape[0], shape[1], shape[2])
+    return dataset.reshape(dataset.shape[0], shape[1], shape[2], shape[3])
 
 
 def kernel3C(gkernel):
@@ -31,7 +39,7 @@ def kernel3C(gkernel):
     return np.stack(arrays, axis=2)
 
 
-def power(image, kernel, norm=False, as_gray=True):
+def power(image, kernel, norm=False, as_gray=False):
 
     if norm:
         image = image_normalization(image)
@@ -48,7 +56,7 @@ def power(image, kernel, norm=False, as_gray=True):
     return np.sqrt(real_feature**2 + imag_feature**2)
 
 
-def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
+def dataloader(dataset, as_gray=False, norm=False, hsv=False, rootdir="./data/atex/"):
 
     dataset = {
         "train": {"data": [], "target": []},
@@ -56,31 +64,36 @@ def dataloader(dataset, as_gray=True, rootdir="./data/atex/"):
         "val": {"data": [], "target": []}
     }
 
-    data_sets = ["train", "val", "test"]
-    for set_ in data_sets:
+    # data_sets = ["train", "val", "test"]
+    for set_ in dataset.keys():
         datadir = os.path.join(rootdir, set_)
         counter = 0
-        idx = 0
+        # idx = 0
         for root, dirs, files in os.walk(datadir, topdown=True):
             for image in files:
                 if image.endswith(".jpg"):
                     dataset[set_]["data"].append(
                         io.imread(os.path.join(root, image), as_gray=as_gray))
                     dataset[set_]["target"].append(counter - 1)
-                    idx += 1
+                    # idx += 1
             counter += 1
         dataset[set_]["data"] = np.asarray(dataset[set_]["data"])
         dataset[set_]["target"] = np.asarray(dataset[set_]["target"])
+        if norm:
+            dataset[set_]["data"] = image_normalization(
+                dataset[set_]["data"], as_gray=as_gray)
+        if hsv:
+            dataset[set_]["data"] = rgb2hsv(dataset[set_]["data"])
 
     return dataset
 
 
 ############################# ANALYSIS #############################
 # visualization of patches
-# atex = dataloader("atex", as_gray=False)
+# atex = dataloader("atex", as_gray=False, norm=False, hsv=False)
 
-classes = ['waterfall', 'river', 'sea', 'wetland', 'delta', 'pool', 'puddle',
-           'swamp', 'glaciers', 'lake', 'rapids', 'snow', 'estuary', 'flood', 'hot_spring']
+classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
+           'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
 
 # num_classes = len(classes)
 
@@ -97,9 +110,9 @@ classes = ['waterfall', 'river', 'sea', 'wetland', 'delta', 'pool', 'puddle',
 #             plt.title(cls)
 # plt.show()
 
-
+# exit()
 # # PCA to visualize first two eigenvectors of train data
-# atex = dataloader("atex", as_gray=True)
+# atex = dataloader("atex", as_gray=False, norm=False, hsv=False)
 # data = atex["train"]["data"].reshape(atex["train"]["data"].shape[0], -1)
 
 # pca = PCA(n_components=100, random_state=88)
@@ -131,7 +144,7 @@ classes = ['waterfall', 'river', 'sea', 'wetland', 'delta', 'pool', 'puddle',
 # # loading data
 as_gray = False
 norm = False
-atex = dataloader("atex", as_gray=as_gray)
+atex = dataloader("atex", as_gray=False, norm=True, hsv=False)
 # as_gray=True --> results are around 20%
 # as_gray=False --> results are around 10%
 # preprocessing works! TODO: check the results with normalization
@@ -144,36 +157,43 @@ y_val = atex["val"]["target"]
 X_train = X_train.reshape(X_train.shape[0], -1)
 X_val = X_val.reshape(X_val.shape[0], -1)
 
-# # t-SNE
-Y = np.loadtxt("tsne_val_10000.txt", delimiter=',')
-
-cidx = 0
-fig, ax = plt.subplots()
-for idx_, class_ in enumerate(classes):
-    idx = np.sum(idx_ == y_val)
-    cidx += idx
-    iidx = cidx - idx
-    # print(iidx, cidx)
-    ax.scatter(Y[iidx:cidx, 0],
-               Y[iidx:cidx:, 1], label=class_)
-ax.legend()
-ax.grid(True)
-
-plt.show()
+# # # t-SNE
 
 
-since = time.time()
-Y = tsne(X_val, 2, 50, 20.0)
-np.savetxt('tsne.txt', Y, delimiter=',')
-time_elapsed = time.time() - since
-print('Training complete in {:.0f}m {:.0f}s'.format(
-    time_elapsed // 60, time_elapsed % 60))
+def tsne_plot(Y, labels, classes=classes):
+    NUM_COLORS = len(classes)
+    cm = plt.get_cmap('gist_rainbow')
+    cidx = 0
+    fig, ax = plt.subplots()
+    markers = ["o", "x", "*", "+", 'd', "o", "x",
+               "*", "+", 'd', "o", "x", "*", "+", 'd']
+    ax.set_prop_cycle(color=[cm(1. * i / NUM_COLORS)
+                             for i in range(NUM_COLORS)])
+    for idx_, class_ in enumerate(classes):
+        idx = np.sum(idx_ == labels)
+        cidx += idx
+        iidx = cidx - idx
+        # print(iidx, cidx)
+        ax.scatter(Y[iidx:cidx, 0],
+                   Y[iidx:cidx:, 1], label=class_, marker=markers[idx_])
+    ax.legend()
+    ax.grid(True)
 
-pylab.scatter(Y[:, 0], Y[:, 1], c=y_val)
-pylab.legend(True)
-pylab.show()
+    plt.show()
 
-exit()
+
+# since = time.time()
+# Y = tsne(X_train, 2, 50, 20.0)
+# np.savetxt('tsne_train_hsv_1000.txt', Y, delimiter=',')
+# time_elapsed = time.time() - since
+# print('Training complete in {:.0f}m {:.0f}s'.format(
+#     time_elapsed // 60, time_elapsed % 60))
+
+
+# Y = np.loadtxt("tsne_train_hsv_1000.txt", delimiter=',')
+# tsne_plot(Y, y_train)
+
+# exit()
 # # PCA
 # pca = PCA(n_components=100, random_state=88)
 # X_train = pca.fit_transform(X_train)
@@ -185,6 +205,7 @@ sigma = 1
 theta = (1 / 4.) * np.pi
 frequency = 0.1
 kernel = gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma)
+print(kernel.shape)
 
 X_train = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_train)
 X_train = np.asarray(list(X_train))
@@ -193,17 +214,17 @@ X_val = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_val)
 X_val = np.asarray(list(X_val))
 
 # # lbp analysis
-# METHOD = 'uniform'
-# radius = 3
-# n_points = 8 * radius
+METHOD = 'uniform'
+radius = 3
+n_points = 8 * radius
 
-# X_train = map(lambda x: local_binary_pattern(
-#     x, n_points, radius, METHOD), X_train)
-# X_train = np.asarray(list(X_train))
+X_train = map(lambda x: local_binary_pattern(
+    x, n_points, radius, METHOD), X_train)
+X_train = np.asarray(list(X_train))
 
-# X_val = map(lambda x: local_binary_pattern(
-#     x, n_points, radius, METHOD), X_val)
-# X_val = np.asarray(list(X_val))
+X_val = map(lambda x: local_binary_pattern(
+    x, n_points, radius, METHOD), X_val)
+X_val = np.asarray(list(X_val))
 
 ####################################
 X_train = np.reshape(X_train, (X_train.shape[0], -1))
@@ -218,7 +239,7 @@ for k in k_choices:
 
     # use of k-nearest-neighbor algorithm
     classifier.train(X_train, y_train)
-    y_pred = classifier.predict(X_val, k=k, method=3)
+    y_pred = classifier.predict(X_val, k=k, method=0)
 
     # Compute the fraction of correctly predicted examples
     num_correct = np.sum(y_pred == y_val)
