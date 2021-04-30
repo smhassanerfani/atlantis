@@ -1,6 +1,7 @@
 import os
 import time
 import numpy as np
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 from skimage import io
 
@@ -8,6 +9,7 @@ from scipy import ndimage as ndi
 from skimage.filters import gabor_kernel
 from skimage.feature import local_binary_pattern
 from skimage.color import rgb2hsv
+from skimage.measure import block_reduce
 
 # from skimage.util import img_as_float
 from sklearn.cluster import KMeans
@@ -42,7 +44,7 @@ def kernel3C(gkernel):
 def power(image, kernel, norm=False, as_gray=False):
 
     if norm:
-        image = image_normalization(image)
+        image = image_normalization(image, as_gray=as_gray)
     if as_gray:
         real_feature = ndi.convolve(image, np.real(kernel), mode='wrap')
         imag_feature = ndi.convolve(image, np.imag(kernel), mode='wrap')
@@ -65,7 +67,7 @@ def dataloader(dataset, as_gray=False, norm=False, hsv=False, rootdir="./data/at
     }
 
     # data_sets = ["train", "val", "test"]
-    for set_ in dataset.keys():
+    for set_ in tqdm(dataset.keys()):
         datadir = os.path.join(rootdir, set_)
         counter = 0
         # idx = 0
@@ -142,22 +144,19 @@ classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
 
 # # KNN analysis
 # # loading data
-as_gray = False
+as_gray = True
 norm = False
-atex = dataloader("atex", as_gray=False, norm=True, hsv=False)
-# as_gray=True --> results are around 20%
-# as_gray=False --> results are around 10%
-# preprocessing works! TODO: check the results with normalization
+atex = dataloader("atex", as_gray=as_gray, norm=norm, hsv=False)
+
 X_train = atex["train"]["data"]
 y_train = atex["train"]["target"]
 X_val = atex["val"]["data"]
 y_val = atex["val"]["target"]
 
+# # t-SNE
 
-X_train = X_train.reshape(X_train.shape[0], -1)
-X_val = X_val.reshape(X_val.shape[0], -1)
-
-# # # t-SNE
+# X_train = X_train.reshape(X_train.shape[0], -1)
+# X_val = X_val.reshape(X_val.shape[0], -1)
 
 
 def tsne_plot(Y, labels, classes=classes):
@@ -182,15 +181,19 @@ def tsne_plot(Y, labels, classes=classes):
     plt.show()
 
 
+# path = "./models/tsne/gjet_train.txt"
+# data = np.loadtxt(path, delimiter=',')
+# print(data.shape)
+
 # since = time.time()
-# Y = tsne(X_train, 2, 50, 20.0)
-# np.savetxt('tsne_train_hsv_1000.txt', Y, delimiter=',')
+# Y = tsne(data, 2, 50, 20.0)
+# np.savetxt('tsne_gjet_train_1000.txt', Y, delimiter=',')
 # time_elapsed = time.time() - since
 # print('Training complete in {:.0f}m {:.0f}s'.format(
 #     time_elapsed // 60, time_elapsed % 60))
 
 
-# Y = np.loadtxt("tsne_train_hsv_1000.txt", delimiter=',')
+# Y = np.loadtxt("./models/tsne/tsne_hsv_train_1000.txt", delimiter=',')
 # tsne_plot(Y, y_train)
 
 # exit()
@@ -201,45 +204,86 @@ def tsne_plot(Y, labels, classes=classes):
 
 
 # # gabor analysis
-sigma = 1
-theta = (1 / 4.) * np.pi
-frequency = 0.1
-kernel = gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma)
-print(kernel.shape)
+# gjet_train = []
+# gjet_val = []
+# sigma = np.pi
+# for mu in tqdm([0, 1, 2, 3, 4, 5, 6, 7]):
+#     for nu in tqdm([0, 1, 2, 3, 4]):
 
-X_train = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_train)
-X_train = np.asarray(list(X_train))
+#         theta = (mu / 8.) * np.pi
+#         frequency = (np.pi / 2) / (np.sqrt(2)) ** nu
+#         kernel = gabor_kernel(frequency, theta=theta,
+#                               sigma_x=sigma, sigma_y=sigma)
 
-X_val = map(lambda x: power(x, kernel, norm=norm, as_gray=as_gray), X_val)
-X_val = np.asarray(list(X_val))
+#         X_train = map(lambda x: power(
+#             x, kernel, norm=norm, as_gray=as_gray), X_train_)
+#         X_train = map(lambda x: block_reduce(x, (2, 2), func=np.max), X_train)
+#         X_train = np.asarray(list(X_train))
+#         gjet_train.append(X_train)
+
+#         X_val = map(lambda x: power(
+#             x, kernel, norm=norm, as_gray=as_gray), X_val_)
+#         X_val = map(lambda x: block_reduce(x, (2, 2), func=np.max), X_val)
+#         X_val = np.asarray(list(X_val))
+#         gjet_val.append(X_val)
+#         # print(f"number of kernel: {len(gjet_val)}")
+
+# gjet_train = np.array(gjet_train)
+# gjet_train = gjet_train.transpose(1, 2, 3, 0)
+# print(gjet_train.shape)
+
+# gjet_val = np.array(gjet_val)
+# gjet_val = gjet_val.transpose(1, 2, 3, 0)
+# print(gjet_val.shape)
+
+# X_train = gjet_train.reshape(gjet_train.shape[0], -1)
+# np.savetxt('gjet_hsv_train.txt', X_train, delimiter=',')
+# print(X_train.shape)
+
+# X_val = gjet_val.reshape(gjet_val.shape[0], -1)
+# np.savetxt('gjet_hsv_val.txt', X_val, delimiter=',')
+# print(X_val.shape)
+
+# pca = PCA(n_components=500, random_state=88)
+# X_train = pca.fit_transform(X_train)
+# np.savetxt('gjet_hsv_train_pca_500.txt', X_train, delimiter=',')
+# print(X_train.shape)
+# X_val = pca.fit_transform(X_val)
+# np.savetxt('gjet_hsv_val_pca_500.txt', X_val, delimiter=',')
+# print(X_val.shape)
+
 
 # # lbp analysis
 METHOD = 'uniform'
-radius = 3
+radius = 1
 n_points = 8 * radius
 
 X_train = map(lambda x: local_binary_pattern(
     x, n_points, radius, METHOD), X_train)
 X_train = np.asarray(list(X_train))
+print(X_train.shape)
 
 X_val = map(lambda x: local_binary_pattern(
     x, n_points, radius, METHOD), X_val)
 X_val = np.asarray(list(X_val))
 
-####################################
+# ####################################
 X_train = np.reshape(X_train, (X_train.shape[0], -1))
 X_val = np.reshape(X_val, (X_val.shape[0], -1))
+
+# X_train = np.loadtxt("./models/tsne/gjet_train_pca_500.txt", delimiter=',')
+# X_val = np.loadtxt("./models/tsne/gjet_val_pca_500.txt", delimiter=',')
 
 classifier = KNearestNeighbor()
 k_choices = [1, 3, 5, 8, 15, 50, 70, 100, 200, 300, 500]
 k_to_accuracies = {}
 
-for k in k_choices:
+for k in tqdm(k_choices):
     k_to_accuracies[k] = []
 
     # use of k-nearest-neighbor algorithm
     classifier.train(X_train, y_train)
-    y_pred = classifier.predict(X_val, k=k, method=0)
+    y_pred = classifier.predict(X_val, k=k, method=2)
 
     # Compute the fraction of correctly predicted examples
     num_correct = np.sum(y_pred == y_val)
