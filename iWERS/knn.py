@@ -144,9 +144,9 @@ classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
 
 # # KNN analysis
 # # loading data
-as_gray = True
+as_gray = False
 norm = False
-atex = dataloader("atex", as_gray=as_gray, norm=norm, hsv=False)
+atex = dataloader("atex", as_gray=as_gray, norm=norm, hsv=True)
 
 X_train = atex["train"]["data"]
 y_train = atex["train"]["target"]
@@ -156,7 +156,7 @@ y_val = atex["val"]["target"]
 # # t-SNE
 
 # X_train = X_train.reshape(X_train.shape[0], -1)
-# X_val = X_val.reshape(X_val.shape[0], -1)
+X_val = X_val.reshape(X_val.shape[0], -1)
 
 
 def tsne_plot(Y, labels, classes=classes):
@@ -181,22 +181,39 @@ def tsne_plot(Y, labels, classes=classes):
     plt.show()
 
 
-# path = "./models/tsne/gjet_train.txt"
-# data = np.loadtxt(path, delimiter=',')
-# print(data.shape)
+path = "./models/tsne/tsne3D_hsv_val_1000.txt"
+data = np.loadtxt(path, delimiter=',')
+print(data.shape)
 
 # since = time.time()
-# Y = tsne(data, 2, 50, 20.0)
-# np.savetxt('tsne_gjet_train_1000.txt', Y, delimiter=',')
+# Y = tsne(X_val, 3, 50, 30.0)
+# np.savetxt('models/tsne/tsne3D_hsv_val_1000.txt', Y, delimiter=',')
 # time_elapsed = time.time() - since
 # print('Training complete in {:.0f}m {:.0f}s'.format(
 #     time_elapsed // 60, time_elapsed % 60))
 
 
-# Y = np.loadtxt("./models/tsne/tsne_hsv_train_1000.txt", delimiter=',')
-# tsne_plot(Y, y_train)
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from matplotlib import colors
 
-# exit()
+fig = plt.figure()
+axis = fig.add_subplot(1, 1, 1, projection="3d")
+
+pixel_colors = nemo.reshape((np.shape(nemo)[0] * np.shape(nemo)[1], 3))
+norm = colors.Normalize(vmin=-1., vmax=1.)
+norm.autoscale(pixel_colors)
+pixel_colors = norm(pixel_colors).tolist()
+
+pixel_colors = nemo.reshape((np.shape(nemo)[0] * np.shape(nemo)[1], 3))
+norm = colors.Normalize(vmin=-1., vmax=1.)
+norm.autoscale(pixel_colors)
+pixel_colors = norm(pixel_colors).tolist()
+
+# Y = np.loadtxt("./models/tsne/tsne_hsv_train_1000.txt", delimiter=',')
+tsne_plot(Y, y_val)
+
+exit()
 # # PCA
 # pca = PCA(n_components=100, random_state=88)
 # X_train = pca.fit_transform(X_train)
