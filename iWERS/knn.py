@@ -155,7 +155,7 @@ y_val = atex["val"]["target"]
 
 # # t-SNE
 
-# X_train = X_train.reshape(X_train.shape[0], -1)
+X_train = X_train.reshape(X_train.shape[0], -1)
 X_val = X_val.reshape(X_val.shape[0], -1)
 
 
@@ -181,39 +181,55 @@ def tsne_plot(Y, labels, classes=classes):
     plt.show()
 
 
-path = "./models/tsne/tsne3D_hsv_val_1000.txt"
-data = np.loadtxt(path, delimiter=',')
-print(data.shape)
+# path = "./tsne3D_hsv_val_1000.txt"
+# data = np.loadtxt(path, delimiter=',')
+# print(data.shape)
 
-# since = time.time()
-# Y = tsne(X_val, 3, 50, 30.0)
-# np.savetxt('models/tsne/tsne3D_hsv_val_1000.txt', Y, delimiter=',')
-# time_elapsed = time.time() - since
-# print('Training complete in {:.0f}m {:.0f}s'.format(
-#     time_elapsed // 60, time_elapsed % 60))
+since = time.time()
+Y = tsne(X_train, 3, 50, 20.0)
+np.savetxt('./tsne3D_hsv_train_1000.txt', Y, delimiter=',')
+time_elapsed = time.time() - since
+print('Training complete in {:.0f}m {:.0f}s'.format(
+    time_elapsed // 60, time_elapsed % 60))
 
 
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-from matplotlib import colors
+def tsne_3dplot(Y, labels, classes=classes):
+    from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib import cm
+    from matplotlib import colors
 
-fig = plt.figure()
-axis = fig.add_subplot(1, 1, 1, projection="3d")
+    NUM_COLORS = len(classes)
+    cm = plt.get_cmap('gist_rainbow')
+    cidx = 0
 
-# pixel_colors = nemo.reshape((np.shape(nemo)[0] * np.shape(nemo)[1], 3))
-norm = colors.Normalize(vmin=-1., vmax=1.)
-norm.autoscale(data)
-pixel_colors = norm(data).tolist()
+    fig = plt.figure()
+    axis = fig.add_subplot(1, 1, 1, projection="3d")
 
-axis.scatter(data[:, 0], data[:, 1], data[:, 2],
-             facecolors=pixel_colors, marker=".")
-axis.set_xlabel("Red")
-axis.set_ylabel("Green")
-axis.set_zlabel("Blue")
-plt.show()
+    markers = ["o", "x", "*", "+", 'd', "o", "x",
+               "*", "+", 'd', "o", "x", "*", "+", 'd']
+    axis.set_prop_cycle(color=[cm(1. * i / NUM_COLORS)
+                               for i in range(NUM_COLORS)])
+    for idx_, class_ in enumerate(classes):
+        idx = np.sum(idx_ == labels)
+        cidx += idx
+        iidx = cidx - idx
+        # print(iidx, cidx)
+        axis.scatter(Y[iidx:cidx, 0],
+                     Y[iidx:cidx:, 1], Y[iidx:cidx:, 2], label=class_, marker=markers[idx_])
 
+    axis.set_xlabel(r"$1^{st}$ dim")
+    axis.set_ylabel(r"$2^{nd}$ dim")
+    axis.set_zlabel(r"$3^{rd}$ dim")
+    axis.legend()
+    axis.grid(True)
+
+    plt.show()
+
+
+tsne_3dplot(Y, y_train)
 # Y = np.loadtxt("./models/tsne/tsne_hsv_train_1000.txt", delimiter=',')
 # tsne_plot(Y, y_val)
+
 
 exit()
 # # PCA
