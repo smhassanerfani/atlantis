@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 import copy
+# from skimage.color import rgb2hsv
 
 # mean = np.array([0.5, 0.5, 0.5])
 # std = np.array([0.25, 0.25, 0.25])
@@ -18,14 +19,24 @@ CLASS torchvision.transforms.ToTensor:
 Converts a PIL Image or numpy.ndarray (H x W x C) in the range [0, 255] to 
 a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0].
 """
+
+
+class ToHSV:
+    def __call__(self, sample):
+        # inputs = sample
+        return sample.convert('HSV')
+
+
 data_transforms = {
     'train': transforms.Compose([
         # transforms.RandomResizedCrop(224),
+        ToHSV(),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         # transforms.Normalize(mean, std)
     ]),
     'val': transforms.Compose([
+        ToHSV(),
         # transforms.Resize(256),
         # transforms.CenterCrop(224),
         transforms.ToTensor(),
@@ -35,6 +46,12 @@ data_transforms = {
 
 data_dir = "./data/atex"
 
+# image_dataset = datasets.ImageFolder(
+#     os.path.join(data_dir, "val"), data_transforms["val"])
+
+# print(image_dataset[0][0].shape)
+
+# exit()
 image_datasets = {x: datasets.ImageFolder(os.path.join(
     data_dir, x), data_transforms[x]) for x in ['train', 'val']}
 dataloaders = {x: torch.utils.data.DataLoader(
@@ -137,8 +154,8 @@ def train_model(model, criterion, optimizer, scheduler=None, num_epochs=30):
                     # "scheduler_state": scheduler.state_dict(),
                     "best_acc": epoch_acc,
                 }
-                save_path = f"./models/ResNet18/model.pth"
-                torch.save(state, save_path)
+                # save_path = f"./models/ResNet18/model.pth"
+                # torch.save(state, save_path)
 
         print()
 
@@ -182,7 +199,7 @@ optimizer = optim.SGD(model.parameters(), lr=2.5e-4,
 
 # step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-# model = train_model(model, criterion, optimizer, num_epochs=30)
+model = train_model(model, criterion, optimizer, num_epochs=30)
 
 
 #### ConvNet as fixed feature extractor ####
