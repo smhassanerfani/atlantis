@@ -1,7 +1,7 @@
 __pycache__/
 venv/
 models/*/*.pth
-models/tsne
+models/tsne/
 data/CamVid
 data/cityscapes
 
