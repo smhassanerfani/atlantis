@@ -200,18 +200,20 @@ from matplotlib import colors
 fig = plt.figure()
 axis = fig.add_subplot(1, 1, 1, projection="3d")
 
-pixel_colors = nemo.reshape((np.shape(nemo)[0] * np.shape(nemo)[1], 3))
+# pixel_colors = nemo.reshape((np.shape(nemo)[0] * np.shape(nemo)[1], 3))
 norm = colors.Normalize(vmin=-1., vmax=1.)
-norm.autoscale(pixel_colors)
-pixel_colors = norm(pixel_colors).tolist()
+norm.autoscale(data)
+pixel_colors = norm(data).tolist()
 
-pixel_colors = nemo.reshape((np.shape(nemo)[0] * np.shape(nemo)[1], 3))
-norm = colors.Normalize(vmin=-1., vmax=1.)
-norm.autoscale(pixel_colors)
-pixel_colors = norm(pixel_colors).tolist()
+axis.scatter(data[:, 0], data[:, 1], data[:, 2],
+             facecolors=pixel_colors, marker=".")
+axis.set_xlabel("Red")
+axis.set_ylabel("Green")
+axis.set_zlabel("Blue")
+plt.show()
 
 # Y = np.loadtxt("./models/tsne/tsne_hsv_train_1000.txt", delimiter=',')
-tsne_plot(Y, y_val)
+# tsne_plot(Y, y_val)
 
 exit()
 # # PCA
