@@ -144,9 +144,9 @@ classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
 
 # # KNN analysis
 # # loading data
-as_gray = False
+as_gray = True
 norm = False
-atex = dataloader("atex", as_gray=as_gray, norm=norm, hsv=True)
+atex = dataloader("atex", as_gray=as_gray, norm=norm, hsv=False)
 
 X_train = atex["train"]["data"]
 y_train = atex["train"]["target"]
@@ -187,7 +187,7 @@ def tsne_plot(Y, labels, classes=classes):
 
 since = time.time()
 Y = tsne(X_train, 3, 50, 20.0)
-np.savetxt('./tsne3D_hsv_train_1000.txt', Y, delimiter=',')
+np.savetxt('./models/tsne/tsne3D_train_1000.txt', Y, delimiter=',')
 time_elapsed = time.time() - since
 print('Training complete in {:.0f}m {:.0f}s'.format(
     time_elapsed // 60, time_elapsed % 60))
