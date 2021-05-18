@@ -159,6 +159,41 @@ X_train = X_train.reshape(X_train.shape[0], -1)
 X_val = X_val.reshape(X_val.shape[0], -1)
 
 
+# # AdaBoost
+
+from sklearn import metrics
+from sklearn.ensemble import AdaBoostClassifier
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+base_estimator = DecisionTreeClassifier(criterion='entropy', max_depth=1)
+# base_estimator = RandomForestClassifier(max_depth=1, random_state=0)
+
+clf = AdaBoostClassifier(base_estimator=base_estimator,
+                         n_estimators=100, random_state=0)
+clf.fit(X_train, y_train)
+
+
+y_val_pred = clf.predict(X_val)
+
+print("-----------------------------------------------Before using AdaBoost------------------------------------------")
+print(clf.score(X_val, y_val))  # prediction accuracy rate
+# Contains the accuracy rate, recall rate and other information tables
+print(metrics.classification_report(y_val, y_val_pred))
+print(metrics.confusion_matrix(y_val, y_val_pred))  # Confusion matrix
+
+
+feats = clf.decision_function(X_val)
+
+# print(feats)
+a = clf.feature_importances_
+a_ = np.sort(a)[::-1]
+
+print(a_[:10])
+exit()
+
+
 def tsne_plot(Y, labels, classes=classes):
     NUM_COLORS = len(classes)
     cm = plt.get_cmap('gist_rainbow')
@@ -173,7 +208,7 @@ def tsne_plot(Y, labels, classes=classes):
         cidx += idx
         iidx = cidx - idx
         # print(iidx, cidx)
-        ax.scatter(Y[iidx:cidx, 0],
+        ax.scatter(Y[iidx: cidx, 0],
                    Y[iidx:cidx:, 1], label=class_, marker=markers[idx_])
     ax.legend()
     ax.grid(True)
@@ -214,7 +249,7 @@ def tsne_3dplot(Y, labels, classes=classes):
         cidx += idx
         iidx = cidx - idx
         # print(iidx, cidx)
-        axis.scatter(Y[iidx:cidx, 0],
+        axis.scatter(Y[iidx: cidx, 0],
                      Y[iidx:cidx:, 1], Y[iidx:cidx:, 2], label=class_, marker=markers[idx_])
 
     axis.set_xlabel(r"$1^{st}$ dim")
