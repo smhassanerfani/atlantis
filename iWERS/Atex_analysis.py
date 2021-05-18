@@ -9,16 +9,25 @@ import matplotlib.pyplot as plt
 import time
 import os
 import copy
-# from skimage.color import rgb2hsv
 
-# mean = np.array([0.5, 0.5, 0.5])
-# std = np.array([0.25, 0.25, 0.25])
+
+def csv_writer(log_list, fieldnames, model_name):
+    import csv
+    with open(f"./models/{model_name}/results.csv", 'w', newline='') as filehandler:
+        fh_writer = csv.DictWriter(filehandler, fieldnames=fieldnames)
+
+        fh_writer.writeheader()
+        for item in log_list:
+            fh_writer.writerow(item)
+
 
 """
 CLASS torchvision.transforms.ToTensor:
 Converts a PIL Image or numpy.ndarray (H x W x C) in the range [0, 255] to 
 a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0].
 """
+mean = np.array([0.5, 0.5, 0.5])
+std = np.array([0.25, 0.25, 0.25])
 
 
 class ToHSV:
@@ -30,28 +39,22 @@ class ToHSV:
 data_transforms = {
     'train': transforms.Compose([
         # transforms.RandomResizedCrop(224),
-        ToHSV(),
+        # ToHSV(),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        # transforms.Normalize(mean, std)
+        transforms.Normalize(mean, std)
     ]),
     'val': transforms.Compose([
-        ToHSV(),
+        # ToHSV(),
         # transforms.Resize(256),
         # transforms.CenterCrop(224),
         transforms.ToTensor(),
-        # transforms.Normalize(mean, std)
+        transforms.Normalize(mean, std)
     ]),
 }
 
 data_dir = "./data/atex"
 
-# image_dataset = datasets.ImageFolder(
-#     os.path.join(data_dir, "val"), data_transforms["val"])
-
-# print(image_dataset[0][0].shape)
-
-# exit()
 image_datasets = {x: datasets.ImageFolder(os.path.join(
     data_dir, x), data_transforms[x]) for x in ['train', 'val']}
 dataloaders = {x: torch.utils.data.DataLoader(
@@ -61,9 +64,6 @@ dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 class_names = image_datasets['train'].classes
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
-#%%
 
 # a = image_datasets["val"][5]
 # print(a[0].shape)
@@ -92,13 +92,20 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # out = torchvision.utils.make_grid(inputs)
 # imshow(out, title=[class_names[x] for x in classes])
 
-def train_model(model, criterion, optimizer, scheduler=None, num_epochs=30):
+def train_model(model, model_name, criterion, optimizer, scheduler=None, num_epochs=30):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
 
+    log_list = []
+    fieldnames = ["epoch", "train_loss", "train_acc", "val_loss", "val_acc"]
+
     for epoch in range(num_epochs):
+
+        log_dic = {}
+        log_dic["epoch"] = epoch
+
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         print('-' * 10)
 
@@ -143,20 +150,29 @@ def train_model(model, criterion, optimizer, scheduler=None, num_epochs=30):
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                 phase, epoch_loss, epoch_acc))
 
-            # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
-                state = {
-                    "epoch": epoch,
-                    "model_state": model.state_dict(),
-                    "optimizer_state": optimizer.state_dict(),
-                    # "scheduler_state": scheduler.state_dict(),
-                    "best_acc": epoch_acc,
-                }
-                # save_path = f"./models/ResNet18/model.pth"
-                # torch.save(state, save_path)
+            if phase == 'train':
+                log_dic["train_loss"] = epoch_loss
+                log_dic["train_acc"] = epoch_acc.item()
 
+            # deep copy the model
+            if phase == 'val':
+                log_dic["val_loss"] = epoch_loss
+                log_dic["val_acc"] = epoch_acc.item()
+
+                if epoch_acc > best_acc:
+                    best_acc = epoch_acc
+                    best_model_wts = copy.deepcopy(model.state_dict())
+                    state = {
+                        "epoch": epoch,
+                        "model_state": model.state_dict(),
+                        "optimizer_state": optimizer.state_dict(),
+                        # "scheduler_state": scheduler.state_dict(),
+                        "best_acc": epoch_acc,
+                    }
+                    save_path = f"./models/{model_name}/model.pth"
+                    torch.save(state, save_path)
+
+        log_list.append(log_dic)
         print()
 
     time_elapsed = time.time() - since
@@ -166,6 +182,7 @@ def train_model(model, criterion, optimizer, scheduler=None, num_epochs=30):
 
     # load best model weights
     model.load_state_dict(best_model_wts)
+    csv_writer(log_list, fieldnames, model_name)
     return model
 
 
@@ -173,12 +190,40 @@ def train_model(model, criterion, optimizer, scheduler=None, num_epochs=30):
 # Load a pretrained model and reset final fully connected layer.
 from torchsummary import summary
 
-model = models.resnet18(pretrained=True)
+model_name = "resnext50_32x4d"
+
+import os
+try:
+    os.makedirs(os.path.join("./models", model_name))
+except FileExistsError:
+    pass
+
+
+# model = models.vgg16(pretrained=True)
+model = models.resnext50_32x4d(pretrained=True)
+
+# print(model)
+# exit()
+
+
+# model.classifier[1] = nn.Conv2d(512, 15, kernel_size=(1, 1), stride=(1, 1))
+# model.num_classes = 15
+
+# model = model.to(device)
+# summary(model, (3, 32, 32))
+
 
 num_ftrs = model.fc.in_features
+# num_ftrs = model.classifier[1].in_features
+
 # Here the size of each output sample is set to 2.
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
+
 model.fc = nn.Linear(num_ftrs, 15)
+# model.classifier[1] = nn.Linear(num_ftrs, 15)
+
+# print(model)
+# exit()
 
 model = model.to(device)
 
@@ -187,6 +232,7 @@ criterion = nn.CrossEntropyLoss()
 # Observe that all parameters are being optimized
 optimizer = optim.SGD(model.parameters(), lr=2.5e-4,
                       momentum=0.9, weight_decay=0.0001)
+# optimizer = torch.optim.Adam(model.parameters(), lr=2.5e-4)
 
 # StepLR Decays the learning rate of each parameter group by gamma every step_size epochs
 # Decay LR by a factor of 0.1 every 7 epochs
@@ -199,9 +245,10 @@ optimizer = optim.SGD(model.parameters(), lr=2.5e-4,
 
 # step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-model = train_model(model, criterion, optimizer, num_epochs=30)
+model = train_model(model, model_name, criterion, optimizer, num_epochs=30)
 
 
+exit()
 #### ConvNet as fixed feature extractor ####
 # Here, we need to freeze all the network except the final layer.
 # We need to set requires_grad == False to freeze the parameters so that the gradients are not computed in backward()
