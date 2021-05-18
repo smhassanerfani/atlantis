@@ -167,7 +167,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-base_estimator = DecisionTreeClassifier(criterion='entropy', max_depth=1)
+base_estimator = DecisionTreeClassifier(criterion='entropy', max_depth=1) # criterion="gini"
 # base_estimator = RandomForestClassifier(max_depth=1, random_state=0)
 
 clf = AdaBoostClassifier(base_estimator=base_estimator,
