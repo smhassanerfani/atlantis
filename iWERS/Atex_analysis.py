@@ -13,7 +13,7 @@ import copy
 
 def csv_writer(log_list, fieldnames, model_name):
     import csv
-    with open(f"./models/{model_name}/results.csv", 'w', newline='') as filehandler:
+    with open(f"./models/{model_name}/results_acc.csv", 'w', newline='') as filehandler:
         fh_writer = csv.DictWriter(filehandler, fieldnames=fieldnames)
 
         fh_writer.writeheader()
@@ -192,40 +192,39 @@ from torchsummary import summary
 from efficientnet_pytorch import EfficientNet
 # import pretrainedmodels
 
-model_name = "dpn68"
+model_name = "wide_resnet50_2"
 
-import os
-try:
-    os.makedirs(os.path.join("./models", model_name))
-except FileExistsError:
-    pass
+# import os
+# try:
+#     os.makedirs(os.path.join("./models", model_name))
+# except FileExistsError:
+#     pass
 
 
 # model = EfficientNet.from_pretrained('efficientnet-b7')
-model = models.vgg16(pretrained=True)
-# model = models.resnext50_32x4d(pretrained=True)
+# num_ftrs = model._fc.in_features
+# model._fc = nn.Linear(num_ftrs, 15)
 
-print(model)
-# exit()
+model = models.wide_resnet50_2(pretrained=True)
 
+num_ftrs = model.fc.in_features
+model.fc = nn.Linear(num_ftrs, 15)
+
+# num_ftrs = model.classifier[6].in_features
+# model.classifier[6] = nn.Linear(num_ftrs, 15)
+
+# # squeezenet1_0
 # model.classifier[1] = nn.Conv2d(512, 15, kernel_size=(1, 1), stride=(1, 1))
 # model.num_classes = 15
 
+
 # model = model.to(device)
 # summary(model, (3, 32, 32))
+# print(model)
 
+# exit()
 
-num_ftrs = model.classifier[6].in_features
-
-# Here the size of each output sample is set to 2.
-# Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
-
-model.classifier[6] = nn.Linear(num_ftrs, 15)
-
-print(model)
-exit()
-
-model = model.to(device)
+# model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
 
@@ -234,58 +233,88 @@ optimizer = optim.SGD(model.parameters(), lr=2.5e-4,
                       momentum=0.9, weight_decay=0.0001)
 # optimizer = torch.optim.Adam(model.parameters(), lr=2.5e-4)
 
-# StepLR Decays the learning rate of each parameter group by gamma every step_size epochs
-# Decay LR by a factor of 0.1 every 7 epochs
-# Learning rate scheduling should be applied after optimizer’s update
-# e.g., you should write your code this way:
-# for epoch in range(100):
-#     train(...)
-#     validate(...)
-#     scheduler.step()
-
 # step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-model = train_model(model, model_name, criterion, optimizer, num_epochs=100)
+# model = train_model(model, model_name, criterion, optimizer, num_epochs=100)
+# exit()
 
+data_transforms = transforms.Compose([
+    # ToHSV(),
+    # transforms.Resize(256),
+    # transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(mean, std)
+])
 
-exit()
-#### ConvNet as fixed feature extractor ####
-# Here, we need to freeze all the network except the final layer.
-# We need to set requires_grad == False to freeze the parameters so that the gradients are not computed in backward()
-# model_conv = torchvision.models.resnet18(pretrained=True)
-# for param in model_conv.parameters():
-#     param.requires_grad = False
+data_dir = "./data/atex"
+batch_size = 64
 
-# # Parameters of newly constructed modules have requires_grad=True by default
-# num_ftrs = model_conv.fc.in_features
-# model_conv.fc = nn.Linear(num_ftrs, 2)
+test_dataset = datasets.ImageFolder(
+    os.path.join(data_dir, 'test'), data_transforms)
 
-# model_conv = model_conv.to(device)
+test_loader = torch.utils.data.DataLoader(
+    test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
 
-# criterion = nn.CrossEntropyLoss()
+test_dataset_size = len(test_dataset)
+class_names = image_datasets['train'].classes
 
-# # Observe that only parameters of final layer are being optimized as
-# # opposed to before.
-# optimizer_conv = optim.SGD(model_conv.fc.parameters(), lr=0.001, momentum=0.9)
+# batch1 = iter(test_loader)
+# images, labels = batch1.next()
+# print(images)
 
-# # Decay LR by a factor of 0.1 every 7 epochs
-# exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv, step_size=7, gamma=0.1)
+FILE = f"./models/{model_name}/model.pth"
 
-# model_conv = train_model(model_conv, criterion, optimizer_conv,
-#                          exp_lr_scheduler, num_epochs=25)
-
-
-phase = 'val'
-FILE = f"./models/ResNet18/model.pth"
-# it takes the loaded dictionary, not the path file itself
 checkpoint = torch.load(FILE)
 model.load_state_dict(checkpoint['model_state'])
-# optimizer.load_state_dict(checkpoint['optimizer_state'])
+optimizer.load_state_dict(checkpoint['optimizer_state'])
 # scheduler.load_state_dict(checkpoint['scheduler_state'])
 epoch = checkpoint['epoch']
 
+# print(epoch)
+# exit()
+
 model.to(device)
 model.eval()
+
+log_dic = {}
+with torch.no_grad():
+    n_correct = 0
+    n_samples = 0
+    n_class_correct = [0 for i in range(15)]
+    n_class_samples = [0 for i in range(15)]
+    for images, labels in test_loader:
+
+        images = images.to(device)
+        labels = labels.to(device)
+        outputs = model(images)
+
+        _, predicted = torch.max(outputs, 1)
+        n_samples += labels.size(0)
+        n_correct += (predicted == labels).sum().item()
+
+        for i in range(labels.size(0)):
+            label = labels[i]
+            pred = predicted[i]
+            if (label == pred):
+                n_class_correct[label] += 1
+            n_class_samples[label] += 1
+
+    acc = 100.0 * n_correct / n_samples
+    # print(f"Accuracy of the network: {acc} %")
+    log_dic['network'] = acc
+
+    for i in range(15):
+        acc = 100.0 * n_class_correct[i] / n_class_samples[i]
+        log_dic[class_names[i]] = acc
+        # print(f"Accuracy of {class_names[i]}: {acc:.2f} %")
+
+import csv
+with open(f'./models/{model_name}/acc_results.csv', 'w') as f:
+    w = csv.writer(f)
+    w.writerows(log_dic.items())
+    # w.writerow(log_dic.values())
+print(log_dic)
+exit()
 
 from PIL import Image
 # pic = Image.open('./data/atex/val/delta/28981184021.x000.y352.jpg')
