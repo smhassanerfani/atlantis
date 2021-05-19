@@ -189,8 +189,9 @@ def train_model(model, model_name, criterion, optimizer, scheduler=None, num_epo
 #### Finetuning the convnet ####
 # Load a pretrained model and reset final fully connected layer.
 from torchsummary import summary
+from efficientnet_pytorch import EfficientNet
 
-model_name = "resnext50_32x4d"
+model_name = "efficientnet-b7"
 
 import os
 try:
@@ -199,12 +200,13 @@ except FileExistsError:
     pass
 
 
+model = EfficientNet.from_pretrained('efficientnet-b7')
 # model = models.vgg16(pretrained=True)
-model = models.resnext50_32x4d(pretrained=True)
+# model = models.resnext50_32x4d(pretrained=True)
 
 # print(model)
 # exit()
-
+#
 
 # model.classifier[1] = nn.Conv2d(512, 15, kernel_size=(1, 1), stride=(1, 1))
 # model.num_classes = 15
@@ -213,13 +215,13 @@ model = models.resnext50_32x4d(pretrained=True)
 # summary(model, (3, 32, 32))
 
 
-num_ftrs = model.fc.in_features
+num_ftrs = model._fc.in_features
 # num_ftrs = model.classifier[1].in_features
 
 # Here the size of each output sample is set to 2.
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
 
-model.fc = nn.Linear(num_ftrs, 15)
+model._fc = nn.Linear(num_ftrs, 15)
 # model.classifier[1] = nn.Linear(num_ftrs, 15)
 
 # print(model)
