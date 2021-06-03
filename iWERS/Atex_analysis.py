@@ -192,7 +192,7 @@ from torchsummary import summary
 from efficientnet_pytorch import EfficientNet
 # import pretrainedmodels
 
-model_name = "wide_resnet50_2"
+model_name = "vgg16"
 
 # import os
 # try:
@@ -205,13 +205,13 @@ model_name = "wide_resnet50_2"
 # num_ftrs = model._fc.in_features
 # model._fc = nn.Linear(num_ftrs, 15)
 
-model = models.wide_resnet50_2(pretrained=True)
+model = models.vgg16(pretrained=True)
 
-num_ftrs = model.fc.in_features
-model.fc = nn.Linear(num_ftrs, 15)
+# num_ftrs = model.fc.in_features
+# model.fc = nn.Linear(num_ftrs, 15)
 
-# num_ftrs = model.classifier[6].in_features
-# model.classifier[6] = nn.Linear(num_ftrs, 15)
+num_ftrs = model.classifier[6].in_features
+model.classifier[6] = nn.Linear(num_ftrs, 15)
 
 # # squeezenet1_0
 # model.classifier[1] = nn.Conv2d(512, 15, kernel_size=(1, 1), stride=(1, 1))
@@ -220,8 +220,8 @@ model.fc = nn.Linear(num_ftrs, 15)
 
 # model = model.to(device)
 # summary(model, (3, 32, 32))
-# print(model)
 
+# print(model)
 # exit()
 
 # model = model.to(device)
@@ -247,7 +247,7 @@ data_transforms = transforms.Compose([
 ])
 
 data_dir = "./data/atex"
-batch_size = 64
+batch_size = 1
 
 test_dataset = datasets.ImageFolder(
     os.path.join(data_dir, 'test'), data_transforms)
@@ -277,6 +277,10 @@ model.to(device)
 model.eval()
 
 log_dic = {}
+
+y_true = []
+y_pred = []
+
 with torch.no_grad():
     n_correct = 0
     n_samples = 0
@@ -292,28 +296,37 @@ with torch.no_grad():
         n_samples += labels.size(0)
         n_correct += (predicted == labels).sum().item()
 
-        for i in range(labels.size(0)):
-            label = labels[i]
-            pred = predicted[i]
-            if (label == pred):
-                n_class_correct[label] += 1
-            n_class_samples[label] += 1
+        y_true.append(labels.item())
+        y_pred.append(predicted.item())
 
-    acc = 100.0 * n_correct / n_samples
-    # print(f"Accuracy of the network: {acc} %")
-    log_dic['network'] = acc
+from sklearn.metrics import classification_report
+final_report = classification_report(y_true, y_pred, target_names=class_names)
 
-    for i in range(15):
-        acc = 100.0 * n_class_correct[i] / n_class_samples[i]
-        log_dic[class_names[i]] = acc
-        # print(f"Accuracy of {class_names[i]}: {acc:.2f} %")
+with open("./cool_dogs.txt", "a") as cool_dogs_file:
+    cool_dogs_file.write(final_report)
+print("finish")
+#         for i in range(labels.size(0)):
+#             label = labels[i]
+#             pred = predicted[i]
+#             if (label == pred):
+#                 n_class_correct[label] += 1
+#             n_class_samples[label] += 1
 
-import csv
-with open(f'./models/{model_name}/acc_results.csv', 'w') as f:
-    w = csv.writer(f)
-    w.writerows(log_dic.items())
-    # w.writerow(log_dic.values())
-print(log_dic)
+#     acc = 100.0 * n_correct / n_samples
+#     # print(f"Accuracy of the network: {acc} %")
+#     log_dic['network'] = acc
+
+#     for i in range(15):
+#         acc = 100.0 * n_class_correct[i] / n_class_samples[i]
+#         log_dic[class_names[i]] = acc
+#         # print(f"Accuracy of {class_names[i]}: {acc:.2f} %")
+
+# import csv
+# with open(f'./models/{model_name}/acc_results.csv', 'w') as f:
+#     w = csv.writer(f)
+#     w.writerows(log_dic.items())
+#     # w.writerow(log_dic.values())
+# print(log_dic)
 exit()
 
 from PIL import Image
