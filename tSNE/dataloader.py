@@ -87,13 +87,14 @@ model.eval()
 
 new_model = FeatureExtractor(model)
 
-
 features = []
 _labels = []
 # Change the device to GPU
 new_model = new_model.to(device)
 
-for inputs, labels in dataloaders['val']:
+from tqdm import tqdm
+
+for inputs, labels in tqdm(dataloaders['train']):
     # print(inputs.shape)
     inputs = inputs.to(device)
     labels = labels.to(device)
@@ -105,9 +106,21 @@ for inputs, labels in dataloaders['val']:
 
 features = np.asarray(features)
 _labels = np.asarray(_labels).reshape(-1)
-# print(_labels)
-# exit()
-# print(features.shape)
+
+print(features.shape, _labels.shape)
+np.savetxt('./tsne2D_vgg16ex_train.txt', features, delimiter=',')
+np.savetxt('./tsne2D_train_labels.txt', _labels, delimiter=',')
+
+exit()
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset', default='mnist70k')
+    parser.add_argument('--num_iters', type=int, default=1000)
+    parser.add_argument('--early_iters', type=int, default=250)
+    args = parser.parse_args()
+    main(args)
 
 
 classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
@@ -179,15 +192,15 @@ from sklearn import manifold
 
 n_components = 3
 # (fig, subplots) = plt.subplots(1, 5, figsize=(15, 8))
-perplexities = [5, 10, 20, 30]
+perplexities = [20]
 
 
 for i, perplexity in enumerate(perplexities):
     # ax = subplots[0][i + 1]
 
     t0 = time.time()
-    tsne = manifold.TSNE(n_components=n_components, n_iter=2000, method='exact', init='random',
-                         random_state=0, perplexity=perplexity, learning_rate=200, verbose=1)
+    tsne = manifold.TSNE(n_components=n_components, n_iter=5000, method='exact', init='random',
+                         random_state=0, perplexity=perplexity, learning_rate=100, verbose=2)
     Y = tsne.fit_transform(features)
     t1 = time.time()
     print("perplexity=%d in %.2g sec" % (perplexity, t1 - t0))
