@@ -61,17 +61,19 @@ def power(image, kernel, norm=False, as_gray=False):
 def dataloader(dataset, as_gray=False, norm=False, hsv=False, rootdir="./data/atex/"):
 
     dataset = {
+        "classes": [],
         "train": {"data": [], "target": []},
         "test": {"data": [], "target": []},
         "val": {"data": [], "target": []}
     }
-
     # data_sets = ["train", "val", "test"]
-    for set_ in tqdm(dataset.keys()):
+    for set_ in tqdm(["train", "val", "test"]):
         datadir = os.path.join(rootdir, set_)
         counter = 0
         # idx = 0
         for root, dirs, files in os.walk(datadir, topdown=True):
+            if counter == 0:
+                dataset["classes"] = dirs
             for image in files:
                 if image.endswith(".jpg"):
                     dataset[set_]["data"].append(
@@ -93,14 +95,16 @@ def dataloader(dataset, as_gray=False, norm=False, hsv=False, rootdir="./data/at
 ############################# ANALYSIS #############################
 # visualization of patches
 # atex = dataloader("atex", as_gray=False, norm=False, hsv=False)
+# print(atex["classes"])
 
-classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
-           'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
 
-# num_classes = len(classes)
+# # classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
+# #            'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
+
+# num_classes = len(atex["classes"])
 
 # samples_per_class = 7
-# for y, cls in enumerate(classes):
+# for y, cls in enumerate(atex["classes"]):
 #     idxs = np.flatnonzero(atex["train"]["target"] == y)
 #     idxs = np.random.choice(idxs, samples_per_class, replace=False)
 #     for i, idx in enumerate(idxs):
@@ -142,9 +146,10 @@ classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
 
 # exit()
 
+
 # # KNN analysis
 # # loading data
-as_gray = True
+as_gray = False
 norm = False
 atex = dataloader("atex", as_gray=as_gray, norm=norm, hsv=False)
 
@@ -159,6 +164,66 @@ X_train = X_train.reshape(X_train.shape[0], -1)
 X_val = X_val.reshape(X_val.shape[0], -1)
 
 
+def tsne_plot(Y, labels, classes=list()):
+    NUM_COLORS = len(classes)
+
+    # plt.rcParams['image.cmap'] = 'nipy_spectral'
+    cm = plt.get_cmap('tab20', lut=NUM_COLORS)
+    cidx = 0
+    markers = ["o", ".", "D", "x", "X", "d", "*",
+               "<", "s", "+", "^", "P", "p", "4", ">"]
+    fig, ax = plt.subplots()
+
+    fig.set_figheight(10)
+    fig.set_figwidth(10)
+    ax.set_prop_cycle(color=[cm(i) for i in range(NUM_COLORS)])
+    for idx_, class_ in enumerate(classes):
+        idx = np.sum(idx_ == labels)
+        cidx += idx
+        iidx = cidx - idx
+        ax.scatter(Y[iidx: cidx, 0],
+                   Y[iidx:cidx:, 1], label=class_, marker=markers[idx_])
+    ax.legend()
+    ax.grid(True)
+
+    plt.show()
+
+
+path = "./models/tsne/tsne_val_1000.txt"
+train_ftrs = np.loadtxt(path, delimiter=',')
+# print(data.shape)
+
+tsne_plot(train_ftrs, y_val, classes=atex["classes"])
+exit()
+
+from sklearn.decomposition import PCA
+pca = PCA(n_components=500, random_state=88)
+pca.fit(X_val)
+X_val = pca.transform(X_val)
+
+print(f"PCA output shape: {X_val.shape}")
+
+
+from sklearn import manifold
+from time import time
+
+n_components = 2
+perplexities = [30]
+
+
+for i, perplexity in enumerate(perplexities):
+
+    t0 = time()
+    tsne = manifold.TSNE(n_components=n_components, n_iter=1500, method='exact', init='random',
+                         random_state=0, perplexity=perplexity, learning_rate=200, verbose=2)  # method= 'barnes_hut'
+    Y = tsne.fit_transform(X_val)
+    t1 = time()
+    print("perplexity=%d in %.2g sec" % (perplexity, t1 - t0))
+    # np.savetxt('./train_vgg16_tsne_ftrs.txt', Y, delimiter=',')
+    # np.savetxt('./train_labels.txt', _labels, delimiter=',')
+
+    tsne_plot(Y, y_val, classes=atex["classes"])
+exit()
 # # AdaBoost
 
 from sklearn import metrics
@@ -167,7 +232,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-base_estimator = DecisionTreeClassifier(criterion='entropy', max_depth=1) # criterion="gini"
+base_estimator = DecisionTreeClassifier(
+    criterion='entropy', max_depth=1)  # criterion="gini"
 # base_estimator = RandomForestClassifier(max_depth=1, random_state=0)
 
 clf = AdaBoostClassifier(base_estimator=base_estimator,
@@ -194,7 +260,7 @@ print(a_[:10])
 exit()
 
 
-def tsne_plot(Y, labels, classes=classes):
+def tsne_plot(Y, labels, classes=list()):
     NUM_COLORS = len(classes)
     cm = plt.get_cmap('gist_rainbow')
     cidx = 0
@@ -228,7 +294,7 @@ print('Training complete in {:.0f}m {:.0f}s'.format(
     time_elapsed // 60, time_elapsed % 60))
 
 
-def tsne_3dplot(Y, labels, classes=classes):
+def tsne_3dplot(Y, labels, classes=list()):
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
     from matplotlib import colors
@@ -261,12 +327,11 @@ def tsne_3dplot(Y, labels, classes=classes):
     plt.show()
 
 
-tsne_3dplot(Y, y_train)
+# tsne_3dplot(Y, y_train, atex["classes"])
 # Y = np.loadtxt("./models/tsne/tsne_hsv_train_1000.txt", delimiter=',')
-# tsne_plot(Y, y_val)
+# tsne_plot(Y, y_val, atex["classes"])
 
 
-exit()
 # # PCA
 # pca = PCA(n_components=100, random_state=88)
 # X_train = pca.fit_transform(X_train)
