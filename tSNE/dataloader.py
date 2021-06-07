@@ -3,6 +3,7 @@ import torch
 from torch import optim, nn
 import numpy as np
 from torchvision import models, datasets, transforms
+import matplotlib.pyplot as plt
 
 mean = np.array([0.485, 0.456, 0.406])
 std = np.array([0.229, 0.224, 0.225])
@@ -34,7 +35,7 @@ data_dir = "/home/serfani/Documents/Microsoft_project/iWERS/data/atex"
 image_datasets = {x: datasets.ImageFolder(os.path.join(
     data_dir, x), data_transforms[x]) for x in ['train', 'val']}
 dataloaders = {x: torch.utils.data.DataLoader(
-    image_datasets[x], batch_size=1, shuffle=True, num_workers=2) for x in ['train', 'val']}
+    image_datasets[x], batch_size=1, shuffle=False, num_workers=2) for x in ['train', 'val']}
 
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 class_names = image_datasets['train'].classes
@@ -64,7 +65,7 @@ class FeatureExtractor(nn.Module):
         return out
 
 
-# Initialize the model
+# # Initialize the model
 model = models.vgg16(pretrained=True)
 
 num_ftrs = model.classifier[6].in_features
@@ -78,12 +79,8 @@ model.load_state_dict(checkpoint['model_state'])
 # scheduler.load_state_dict(checkpoint['scheduler_state'])
 # epoch = checkpoint['epoch']
 
-# print(epoch)
-# exit()
-
 model.to(device)
 model.eval()
-
 
 new_model = FeatureExtractor(model)
 
@@ -95,52 +92,38 @@ new_model = new_model.to(device)
 from tqdm import tqdm
 
 for inputs, labels in tqdm(dataloaders['train']):
-    # print(inputs.shape)
-    inputs = inputs.to(device)
-    labels = labels.to(device)
-    with torch.no_grad():
-        feature = new_model(inputs)
-        features.append(feature.cpu().detach().numpy().reshape(-1))
-        _labels.append(labels.cpu().numpy())
 
+    inputs = inputs.to(device)
+    _labels.append(labels.item())
+    with torch.no_grad():
+        # feature = new_model(inputs)
+        # features.append(feature.cpu().detach().numpy().reshape(-1))
+        features.append(inputs.cpu().detach().numpy().reshape(-1))
 
 features = np.asarray(features)
-_labels = np.asarray(_labels).reshape(-1)
+_labels = np.asarray(_labels)
 
+print("Output of VGG ftrs:")
 print(features.shape, _labels.shape)
-np.savetxt('./tsne2D_vgg16ex_train.txt', features, delimiter=',')
-np.savetxt('./tsne2D_train_labels.txt', _labels, delimiter=',')
-
-exit()
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', default='mnist70k')
-    parser.add_argument('--num_iters', type=int, default=1000)
-    parser.add_argument('--early_iters', type=int, default=250)
-    args = parser.parse_args()
-    main(args)
-
-
-classes = ['pool', 'flood', 'hot_spring', 'waterfall', 'lake', 'snow', 'rapids',
-           'river', 'glaciers', 'puddle', 'sea', 'delta', 'estuary', 'wetland', 'swamp']
-
-
-def tsne_plot(Y, labels, classes=classes):
+def tsne_plot(Y, labels, classes=class_names):
     NUM_COLORS = len(classes)
-    cm = plt.get_cmap('gist_rainbow')
+
+    # plt.rcParams['image.cmap'] = 'nipy_spectral'
+    cm = plt.get_cmap('tab20', lut=NUM_COLORS)
     cidx = 0
+    markers = ["o", ".", "D", "x", "X", "d", "*",
+               "<", "s", "+", "^", "P", "p", "4", ">"]
     fig, ax = plt.subplots()
-    markers = ["o", "x", "*", "+", 'd', "o", "x",
-               "*", "+", 'd', "o", "x", "*", "+", 'd']
-    ax.set_prop_cycle(color=[cm(1. * i / NUM_COLORS)
-                             for i in range(NUM_COLORS)])
+
+    fig.set_figheight(10)
+    fig.set_figwidth(10)
+    ax.set_prop_cycle(color=[cm(i) for i in range(NUM_COLORS)])
     for idx_, class_ in enumerate(classes):
         idx = np.sum(idx_ == labels)
         cidx += idx
         iidx = cidx - idx
-        # print(iidx, cidx)
         ax.scatter(Y[iidx: cidx, 0],
                    Y[iidx:cidx:, 1], label=class_, marker=markers[idx_])
     ax.legend()
@@ -148,66 +131,50 @@ def tsne_plot(Y, labels, classes=classes):
 
     plt.show()
 
+# def tsne_plot(features, labels, classes=list()):
 
-def tsne_3dplot(Y, labels, classes=classes):
-    from mpl_toolkits.mplot3d import Axes3D
-    from matplotlib import cm
-    from matplotlib import colors
+#     import matplotlib.patches as mpatches
 
-    NUM_COLORS = len(classes)
-    cm = plt.get_cmap('gist_rainbow')
-    cidx = 0
+#     cmap = plt.get_cmap('tab20c', lut=len(classes))
 
-    fig = plt.figure()
-    axis = fig.add_subplot(1, 1, 1, projection="3d")
+#     fig, ax = plt.subplots()
 
-    markers = ["o", "x", "*", "+", 'd', "o", "x",
-               "*", "+", 'd', "o", "x", "*", "+", 'd']
-    axis.set_prop_cycle(color=[cm(1. * i / NUM_COLORS)
-                               for i in range(NUM_COLORS)])
-    for idx_, class_ in enumerate(classes):
-        idx = np.sum(idx_ == labels)
-        cidx += idx
-        iidx = cidx - idx
-        # print(iidx, cidx)
-        axis.scatter(Y[iidx: cidx, 0],
-                     Y[iidx:cidx:, 1], Y[iidx:cidx:, 2], label=class_, marker=markers[idx_])
+#     fig.set_figheight(10)
+#     fig.set_figwidth(10)
+#     patches = [mpatches.Patch(color=cmap(idx), label=name)
+#                for idx, name in enumerate(classes)]
 
-    axis.set_xlabel(r"$1^{st}$ dim")
-    axis.set_ylabel(r"$2^{nd}$ dim")
-    axis.set_zlabel(r"$3^{rd}$ dim")
-    axis.legend()
-    axis.grid(True)
-
-    plt.show()
+#     ax.scatter(features[:, 0], features[:, 1], 50, labels, cmap=cmap)
+#     ax.legend(handles=patches, loc='upper right')
+#     plt.show()
 
 
-# import numpy as np
-import matplotlib.pyplot as plt
-import time
-from matplotlib.ticker import NullFormatter
+# PCA to visualize first two eigenvectors of train data
+from sklearn.decomposition import PCA
+pca = PCA(n_components=500, random_state=88)
+pca.fit(features)
+features = pca.transform(features)
+
+print(features.shape)
+
+
 from sklearn import manifold
-# from time import time
+from time import time
 
-
-n_components = 3
-# (fig, subplots) = plt.subplots(1, 5, figsize=(15, 8))
+n_components = 2
 perplexities = [20]
 
 
 for i, perplexity in enumerate(perplexities):
-    # ax = subplots[0][i + 1]
 
-    t0 = time.time()
-    tsne = manifold.TSNE(n_components=n_components, n_iter=5000, method='exact', init='random',
-                         random_state=0, perplexity=perplexity, learning_rate=100, verbose=2)
+    t0 = time()
+    tsne = manifold.TSNE(n_components=n_components, n_iter=10000, method='exact', init='random',
+                         random_state=0, perplexity=perplexity, learning_rate=200, verbose=2)  # method= 'barnes_hut'
     Y = tsne.fit_transform(features)
-    t1 = time.time()
+    t1 = time()
     print("perplexity=%d in %.2g sec" % (perplexity, t1 - t0))
-    # ax.set_title("Perplexity=%d" % perplexity)
-    tsne_3dplot(Y, _labels, classes=classes)
-    # ax.scatter(Y[red, 0], Y[red, 1], c="r")
-    # ax.scatter(Y[green, 0], Y[green, 1], c="g")
-    # ax.xaxis.set_major_formatter(NullFormatter())
-    # ax.yaxis.set_major_formatter(NullFormatter())
-    # ax.axis('tight')
+    np.savetxt('./train_tsne_ftrs.txt', Y, delimiter=',')
+    # np.savetxt('./train_labels.txt', _labels, delimiter=',')
+
+    tsne_plot(Y, _labels, classes=class_names)
+exit()
