@@ -4,4 +4,4 @@ models/*/*.pth
 models/tsne/
 data/CamVid
 data/cityscapes
-
+../tSNE/*.txt
