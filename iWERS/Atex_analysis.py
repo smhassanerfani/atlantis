@@ -192,39 +192,37 @@ from torchsummary import summary
 from efficientnet_pytorch import EfficientNet
 # import pretrainedmodels
 
-model_name = "vgg16"
+model_name = "shufflenet_v2_x1_0_t4"
 
-# import os
-# try:
-#     os.makedirs(os.path.join("./models", model_name))
-# except FileExistsError:
-#     pass
+import os
+try:
+    os.makedirs(os.path.join("./models", model_name))
+except FileExistsError:
+    pass
 
 
 # model = EfficientNet.from_pretrained('efficientnet-b7')
 # num_ftrs = model._fc.in_features
 # model._fc = nn.Linear(num_ftrs, 15)
 
-model = models.vgg16(pretrained=True)
+model = models.shufflenet_v2_x1_0(pretrained=True)
 
-# num_ftrs = model.fc.in_features
-# model.fc = nn.Linear(num_ftrs, 15)
+num_ftrs = model.fc.in_features
+model.fc = nn.Linear(num_ftrs, 15)
 
-num_ftrs = model.classifier[6].in_features
-model.classifier[6] = nn.Linear(num_ftrs, 15)
+# num_ftrs = model.classifier[6].in_features
+# model.classifier[6] = nn.Linear(num_ftrs, 15)
 
-# # squeezenet1_0
+# squeezenet1_0
 # model.classifier[1] = nn.Conv2d(512, 15, kernel_size=(1, 1), stride=(1, 1))
 # model.num_classes = 15
 
 
-# model = model.to(device)
+model = model.to(device)
 # summary(model, (3, 32, 32))
 
 # print(model)
 # exit()
-
-# model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
 
@@ -235,8 +233,8 @@ optimizer = optim.SGD(model.parameters(), lr=2.5e-4,
 
 # step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-# model = train_model(model, model_name, criterion, optimizer, num_epochs=100)
-# exit()
+model = train_model(model, model_name, criterion, optimizer, num_epochs=30)
+exit()
 
 data_transforms = transforms.Compose([
     # ToHSV(),
