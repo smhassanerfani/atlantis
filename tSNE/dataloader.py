@@ -84,6 +84,9 @@ model.eval()
 
 new_model = FeatureExtractor(model)
 
+print(new_model)
+exit()
+
 features = []
 _labels = []
 # Change the device to GPU
