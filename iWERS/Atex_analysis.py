@@ -192,7 +192,7 @@ from torchsummary import summary
 from efficientnet_pytorch import EfficientNet
 # import pretrainedmodels
 
-model_name = "shufflenet_v2_x1_0_t4"
+model_name = "shufflenet_v2_x1_0_t2"
 
 import os
 try:
@@ -227,14 +227,14 @@ model = model.to(device)
 criterion = nn.CrossEntropyLoss()
 
 # Observe that all parameters are being optimized
-optimizer = optim.SGD(model.parameters(), lr=2.5e-4,
+optimizer = optim.SGD(model.parameters(), lr=1.0e-2,
                       momentum=0.9, weight_decay=0.0001)
 # optimizer = torch.optim.Adam(model.parameters(), lr=2.5e-4)
 
 # step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-model = train_model(model, model_name, criterion, optimizer, num_epochs=30)
-exit()
+# model = train_model(model, model_name, criterion, optimizer, num_epochs=30)
+# exit()
 
 data_transforms = transforms.Compose([
     # ToHSV(),
