@@ -165,7 +165,7 @@ learning_rate = 2.5e-4
 image_datasets = {x: Atlantis(split=x, transform=data_transforms[x])
                   for x in ['train', 'val', 'test']}
 dataloaders = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True,
-                             num_workers=num_workers, drop_last=False) for x in ['train', 'val', 'test']}
+                             num_workers=num_workers, drop_last=True) for x in ['train', 'val', 'test']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val', 'test']}
 # CHECKING THE IMAGES AND MASKS
 
@@ -371,7 +371,7 @@ def train_model(model, model_name, criterion, optimizer, scheduler, num_epochs=2
 
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 
-model_name = "deeplabv3_resnet101"
+model_name = "deeplabv3_resnet50"
 
 import os
 try:
@@ -381,10 +381,6 @@ except FileExistsError:
 
 model = models.segmentation.deeplabv3_resnet101(pretrained=True, progress=True)
 model.classifier = DeepLabHead(2048, 56)
-
-# FILE = "./models/deeplabv3_resnet50/model.pth"
-# checkpoint = torch.load(FILE)
-# model.load_state_dict(checkpoint['model_state'])
 
 model.to(device)
 
@@ -399,6 +395,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=2.5e-4, momentum=0.9, weight_
 model = train_model(model, model_name, criterion, optimizer,
                     scheduler=None, num_epochs=num_epochs)
 
+exit()
 ############################################ TESTING PART ###################################
 # phase = 'val'
 # FILE = f"./models/{model_name}/model.pth"
