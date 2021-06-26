@@ -381,6 +381,7 @@ except FileExistsError:
 
 model = models.segmentation.deeplabv3_resnet101(pretrained=True, progress=True)
 model.classifier = DeepLabHead(2048, 56)
+print(model); exit()
 
 model.to(device)
 
