@@ -7,10 +7,10 @@ from PIL import Image
 import io
 
 # Key:
-api_key = 'da03d4d2c9d70753c5b918009711b9ea'
+api_key = "flikr apu key number"
 
 # Secret:
-secret = 'f35c6f99121e3e83'
+secret = "flickr api secret number"
 
 # natural_list = list()
 # artificial_list = list()
