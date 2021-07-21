@@ -1,58 +1,88 @@
-# Chose Images and correspond json_file is located in the same directory
-# throgh code we get access to the directory and extract the name of each image file (id)
 import os
 import json
+import argparse
 
-rootdir = "/home/serfani/Downloads/new_dataset"
 
-labels_list = list()
-with os.scandir(rootdir) as it:
-    for entry in it:
-        if entry.is_dir():
-            labels_list.append(entry.name)
+IMAGES_ROOT = "/home/serfani/Downloads/json_project/images"
+LABEL_DIR = "/home/serfani/Downloads/json_project/"
+JSON_DIR = "/home/serfani/Downloads/json_project/"
 
-creativecommons = [1, 2, 3, 4, 5, 6, 7, 8]
 
-images_list = list()
+def get_arguments():
+    parser = argparse.ArgumentParser(
+        description="This code parses and captures the corresponding information of final images from initial json file and saves in new json file.")
+    parser.add_argument("-i", "--images-root", type=str, default=IMAGES_ROOT, required=False,
+                        help="The path of final images.")
+    parser.add_argument("-l", "--label-dir", type=str, default=LABEL_DIR, required=False,
+                        help="The path of directory including the first images based on different CC license code.")
+    parser.add_argument("-j", "--json-dir", type=str, default=JSON_DIR, required=False,
+                        help="The path the reparsed json will be dumped.")
 
-for label in labels_list:
-    json_list = []
-    for license in creativecommons:
-        label_path = os.path.join(rootdir, label)
-        license_path = os.path.join(label_path, str(license))
+    return parser.parse_args()
 
-        with os.scandir(license_path) as it:
-            for entry in it:
-                if entry.name.endswith('.jpg'):
-                    images_list.append(entry.name.split('.')[0])
-        try:
-            with open(os.path.join(license_path, 'json_file.json'), ) as jf:
-                img_json = json.load(jf)
-        except FileNotFoundError as error:
-            print(f'FileNotFoundError: {error}')
 
-        for imgID in images_list:
+args = get_arguments()
 
-            dic_to_json = {}
-            for img in img_json['photos']['photo']:
-                if imgID == img['id']:
-                    try:
-                        dic_to_json['id'] = img['id']
-                        # dic_to_json["secret"] = img["secret"]
-                        # dic_to_json["server"] = img["server"]
-                        # dic_to_json["farm"] = img["farm"]
-                        dic_to_json["license"] = img["license"]
-                        dic_to_json["flickr_url"] = img["flickr_url"]
-                        # dic_to_json["file_name"] = img["file_name"]
-                        dic_to_json["date_captured"] = img["date_captured"]
-                        dic_to_json["width"] = img["width"]
-                        dic_to_json["height"] = img["height"]
 
-                    except KeyError as error:
-                        print(f'KeyError: {error}')
+def get_images_list(image_root):
+    image_root = os.path.join(image_root, "images")
+    images_list = list()
+    for root, dirs, files in os.walk(image_root, topdown=True):
+        for file in files:
+            if file.endswith(".jpg"):
+                images_list.append(file.split(".")[0])
 
-                    json_list.append(dic_to_json)
-                    break
+    return images_list
 
-    with open(os.path.join(label_path, 'json_file.json'), 'a') as jf2:
-        json.dump(json_list, jf2, indent=4)
+
+def get_image_info(label_dir, images_list):
+    json_list = list()
+    for root, dirs, files in os.walk(label_dir, topdown=True):
+        for file in files:
+            if file.endswith(".json"):
+                with open(os.path.join(root, file), ) as jf:
+                    json_info = json.load(jf)
+
+                for image_name in images_list:
+                    for entry in json_info['photos']['photo']:
+                        if image_name == entry['id']:
+                            # print(image_name)
+                            try:
+                                json_list.append({
+                                    "id": entry["id"],
+                                    # "owner": entry["owner"],
+                                    "secret": entry["secret"],
+                                    "server": entry["server"],
+                                    "farm": entry["farm"],
+                                    # "title": entry["title"],
+                                    # "ispublic": entry["ispublic"],
+                                    "license": entry["license"],
+                                    "flickr_url": entry["flickr_url"],
+                                    "file_name": entry["file_name"],
+                                    "date_captured": entry["date_captured"],
+                                    "width": entry["width"],
+                                    "height": entry["height"]
+                                })
+
+                            except KeyError as err:
+                                print(f'KeyError: {err}')
+                            break
+
+    return json_list
+
+
+def dump_json_info(json_root, json_list):
+    with open(os.path.join(json_root, 'json_file.json'), 'a') as jf:
+        json.dump(json_list, jf, indent=4)
+
+
+def main():
+
+    json_list = get_image_info(
+        args.label_dir, get_images_list(args.images_root))
+    dump_json_info(args.json_dir, json_list)
+    print(f"number of images were parsed: {len(json_list)}")
+
+
+if __name__ == '__main__':
+    main()
