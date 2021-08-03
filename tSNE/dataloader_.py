@@ -29,7 +29,7 @@ data_transforms = {
     ]),
 }
 
-data_dir = "/home/serfani/Documents/Microsoft_project/iWERS/data/atex"
+data_dir = "/home/serfani/Documents/atlantis/iWERS/data/atex"
 
 
 image_datasets = {x: datasets.ImageFolder(os.path.join(
@@ -80,51 +80,51 @@ class FeatureExtractor(nn.Module):
 
 
 # # Initialize the model
-model = models.shufflenet_v2_x1_0(pretrained=True)
+# model = models.shufflenet_v2_x1_0(pretrained=True)
 
-num_ftrs = model.fc.in_features
-model.fc = nn.Linear(num_ftrs, 15)
+# num_ftrs = model.fc.in_features
+# model.fc = nn.Linear(num_ftrs, 15)
 
-# print(model)
-# exit()
+# # print(model)
+# # exit()
 
-FILE = "/home/serfani/Documents/Microsoft_project/iWERS/models/shufflenet_v2_x1_0_t2/model.pth"
+# FILE = "/home/serfani/Documents/Microsoft_project/iWERS/models/shufflenet_v2_x1_0_t2/model.pth"
 
-checkpoint = torch.load(FILE)
-model.load_state_dict(checkpoint['model_state'])
-# optimizer.load_state_dict(checkpoint['optimizer_state'])
-# scheduler.load_state_dict(checkpoint['scheduler_state'])
-# epoch = checkpoint['epoch']
+# checkpoint = torch.load(FILE)
+# model.load_state_dict(checkpoint['model_state'])
+# # optimizer.load_state_dict(checkpoint['optimizer_state'])
+# # scheduler.load_state_dict(checkpoint['scheduler_state'])
+# # epoch = checkpoint['epoch']
 
-model.to(device)
-model.eval()
+# model.to(device)
+# model.eval()
 
-new_model = FeatureExtractor(model)
+# new_model = FeatureExtractor(model)
 
-# print(new_model)
-# exit()
+# # print(new_model)
+# # exit()
 
-features = []
-_labels = []
-# Change the device to GPU
-new_model = new_model.to(device)
+# features = []
+# _labels = []
+# # Change the device to GPU
+# new_model = new_model.to(device)
 
-from tqdm import tqdm
+# from tqdm import tqdm
 
-for inputs, labels in tqdm(dataloaders['train']):
+# for inputs, labels in tqdm(dataloaders['train']):
 
-    inputs = inputs.to(device)
-    _labels.append(labels.item())
-    with torch.no_grad():
-        feature = new_model(inputs)
-        features.append(feature.cpu().detach().numpy().reshape(-1))
-        # features.append(inputs.cpu().detach().numpy().reshape(-1))
+#     inputs = inputs.to(device)
+#     _labels.append(labels.item())
+#     with torch.no_grad():
+#         feature = new_model(inputs)
+#         features.append(feature.cpu().detach().numpy().reshape(-1))
+#         # features.append(inputs.cpu().detach().numpy().reshape(-1))
 
-features = np.asarray(features)
-_labels = np.asarray(_labels)
+# features = np.asarray(features)
+# _labels = np.asarray(_labels)
 
-print("Output of shufflenet_v2x10 ftrs:")
-print(features.shape, _labels.shape)
+# print("Output of shufflenet_v2x10 ftrs:")
+# print(features.shape, _labels.shape)
 # exit()
 
 
@@ -161,6 +161,14 @@ def tsne_plot(Y, labels, classes=class_names):
     ax.grid(True)
 
     plt.show()
+
+
+features = np.loadtxt("./train_shufflenet_tsne_ftrs.txt", delimiter=",")
+labels = np.loadtxt("./train_labels.txt", delimiter=",")
+
+tsne_plot(features, labels, classes=class_names)
+
+exit()
 
 # def tsne_plot(features, labels, classes=list()):
 
