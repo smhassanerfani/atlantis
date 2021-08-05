@@ -9,3 +9,4 @@ For the first time, this dataset covers a wide range of natural waterbodies such
 ## AQUANet
 In addition to waterbodies dataset, and in order to tackle the inherent challenges in the segmentation of waterbodies, we also developed, CNN-based semantic segmentation network, which takes advantage of two different paths to process the aquatic and non-aquatic regions, separately. Each path includes low-level feature and cross-path modulation, to adjust features for better representation. The results show that AQUANet outperforms other state-of-the-art semantic-segmentation networks on ATLANTIS, and the ablation studies justify the effectiveness of the proposed components.
 ![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.svg)
+![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.png)
