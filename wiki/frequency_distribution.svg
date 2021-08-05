@@ -22,7 +22,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -40,7 +39,7 @@
      id="namedview2054"
      showgrid="false"
      inkscape:zoom="0.38744844"
-     inkscape:cx="2155.1255"
+     inkscape:cx="1874.2388"
      inkscape:cy="675"
      inkscape:window-x="72"
      inkscape:window-y="27"
@@ -86,13 +85,20 @@
     </clipPath>
   </defs>
   <rect
-     style="fill:none;stroke:#d9d9d9;stroke-width:3.4375;stroke-miterlimit:2"
+     style="fill:#ffffff;stroke-width:0.9626174"
+     id="rect1460"
+     height="1266.4083"
+     width="3348.1233"
+     y="0.5"
+     x="44.376804" />
+  <rect
+     style="fill:none;stroke:#d9d9d9;stroke-width:3.30899715;stroke-miterlimit:2"
      id="rect1462"
      stroke-miterlimit="2"
-     height="1349"
-     width="3392"
+     height="1266.4083"
+     width="3348.1233"
      y="0.5"
-     x="0.5" />
+     x="44.376804" />
   <path
      d="m 231.5,712.5 h 3131"
      stroke-miterlimit="2"
@@ -600,49 +606,49 @@
   <text
      style="font-weight:400;font-size:41.25px;font-family:Verdana, Verdana_MSFontService, sans-serif;fill:#595959;stroke-width:3.4375"
      id="text1636"
-     y="840.3252"
+     y="844.3252"
      x="189.12555"
      font-size="12"
      font-weight="400">0<tspan
    style="font-size:41.25px;stroke-width:3.4375"
    id="tspan1622"
-   y="729.9812"
+   y="733.9812"
    x="162.82452"
    font-size="12">50</tspan>
 <tspan
    style="font-size:41.25px;stroke-width:3.4375"
    id="tspan1624"
-   y="619.34595"
+   y="623.34595"
    x="136.52328"
    font-size="12">100</tspan>
 <tspan
    style="font-size:41.25px;stroke-width:3.4375"
    id="tspan1626"
-   y="509.00183"
+   y="513.00183"
    x="136.52328"
    font-size="12">150</tspan>
 <tspan
    style="font-size:41.25px;stroke-width:3.4375"
    id="tspan1628"
-   y="398.36624"
+   y="402.36624"
    x="136.52328"
    font-size="12">200</tspan>
 <tspan
    style="font-size:41.25px;stroke-width:3.4375"
    id="tspan1630"
-   y="288.02249"
+   y="292.02249"
    x="136.52328"
    font-size="12">250</tspan>
 <tspan
    style="font-size:41.25px;stroke-width:3.4375"
    id="tspan1632"
-   y="177.38655"
+   y="181.38655"
    x="136.52328"
    font-size="12">300</tspan>
 <tspan
    style="font-size:41.25px;stroke-width:3.4375"
    id="tspan1634"
-   y="67.042831"
+   y="71.042831"
    x="136.52328"
    font-size="12">350</tspan>
 </text>
@@ -913,7 +919,7 @@
   <g
      id="g1728"
      clip-path="url(#clip2)"
-     transform="translate(-1713,-280)">
+     transform="translate(-1719,-280)">
     <text
        style="font-weight:400;font-size:55px;font-family:Verdana, Verdana_MSFontService, sans-serif;fill:#595959"
        id="text1726"
