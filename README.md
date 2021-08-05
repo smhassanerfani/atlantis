@@ -8,17 +8,18 @@ For the first time, this dataset covers a wide range of natural waterbodies such
 
 ## AQUANet
 In addition to waterbodies dataset, and in order to tackle the inherent challenges in the segmentation of waterbodies, we also developed, CNN-based semantic segmentation network, which takes advantage of two different paths to process the aquatic and non-aquatic regions, separately. Each path includes low-level feature and cross-path modulation, to adjust features for better representation. The results show that AQUANet outperforms other state-of-the-art semantic-segmentation networks on ATLANTIS, and the ablation studies justify the effectiveness of the proposed components.
-![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.svg)
 
 # Dataset Overview
 The ATLANTIS dataset is designed and developed with the goal of capturing a wide-range of water-related objects, either those exist in natural environment or the infrastructure and man-made (artificial) water systems. In this dataset, labels were first selected based on the most frequent objects, used in water-related studies or can be found in real-world scenes. Aside from the background objects, total of 56 labels, including 17 artificial, 18 natural water-bodies, and 21 general labels, are selected. These general labels are considered for providing contextual information that most likely can be found in water-related scenes. After finalizing the selection of waterbody labels, a comprehensive investigation on each individual label was performed by annotators to make sure all the labels are vivid examples of those objects in real-world. Moreover, sometimes some of the water-related labels, e.g., levee, embankment, and floodbank, have been used interchangeably in water resources field; thus, those labels are either merged into a unique group or are removed from the dataset to prevent an individual object receives different labels.
-![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/pixels_frequency_distribution.svg)
 
 In order to gather a corpus of images, we have used Flickr API to query and collect 800 "medium-sized" unique images for each label based on seven commonly used "Creative Commons" and "United States Government Work" licenses. Downloaded images were then filtered by a two-stage hierarchical procedure. In the first stage, each annotator was assigned to review a specific list of labels and remove irrelevant images based on that specific list of labels. In the second stage, several meetings were held between the entire annotation team and the project coordinator to finalize the images which appropriately represent each of 56 labels. Finally, images were annotated by annotators who have solid water resources engineering background as well as experience working with the [CVAT](https://github.com/openvinotoolkit/cvat), which is a free, open source, and web-based image/video annotation tool.
 
 ## Dataset Statistics
 
-Figure 2 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies. 
+Figure 2 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies.
+![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.svg)
 
 Figure 3 shows the frequency distribution of the number of pixels for all 56 ATLANTIS labels plus background (percentage).
+![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/pixels_frequency_distribution.svg)
+
 Such a long-tailed distribution is common for semantic segmentation datasets even if the number of images that contain specific label are pre-controlled. Such frequency distribution for pixels would be inevitable for objects existing in real-world. Taking "water tower" as an example, despite having 219 images, the number of pixels are less than many other labels in the dataset. In total, only 4.89% of pixels are unlabeled, and 34.17% and 60.94% of pixels belong to waterbodies (natural and artificial) and general labels, respectively. 
