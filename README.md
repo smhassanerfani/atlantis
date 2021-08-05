@@ -37,3 +37,7 @@ Figure 4 shows the frequency distribution of the number of pixels for all 56 ATL
 </p>
 
 Such a long-tailed distribution is common for semantic segmentation datasets even if the number of images that contain specific label are pre-controlled. Such frequency distribution for pixels would be inevitable for objects existing in real-world. Taking "water tower" as an example, despite having 219 images, the number of pixels are less than many other labels in the dataset. In total, only 4.89% of pixels are unlabeled, and 34.17% and 60.94% of pixels belong to waterbodies (natural and artificial) and general labels, respectively. 
+<p align="center">
+  <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/r2_images_vs_pixels.svg">
+  Figure 5.  The "R-squared" of the regression between the number of images and pixels is relatively low.
+</p>
