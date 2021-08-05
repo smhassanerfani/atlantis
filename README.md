@@ -3,6 +3,7 @@
 
 This is the respository for the ATLANTIS. All waterbody labels are comprehensively described in [ATLANTIS Wiki](https://github.com/smhassanerfani/atlantis/wiki).
 ![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/dataset.png)
+Figure 1. ATLANTIS - ArTificiaL And Natural waTer-bodIes dataSet.
 
 For the first time, this dataset covers a wide range of natural waterbodies such as sea, lake, river and man-made (artificial) water-related sturcures such as dam, reservoir, canal, and pier. ATLANTIS includes 5,195 pixel-wise annotated images split to 3,364 training, 535 validation, and 1,296 testing images. In addition to 35 waterbodies, this dataset covers 21 general labels such as person, car, road and building.
 
@@ -18,8 +19,10 @@ In order to gather a corpus of images, we have used Flickr API to query and coll
 
 Figure 2 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies.
 ![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.svg)
+Figure 2. Frequency distribution of the number of images assigned to each waterbody label.
 
 Figure 3 shows the frequency distribution of the number of pixels for all 56 ATLANTIS labels plus background (percentage).
 ![](https://github.com/smhassanerfani/atlantis/blob/master/wiki/pixels_frequency_distribution.svg)
+Figure 3. Percentage of pixels frequency distribution for all 56 ATLANTIS labels plus background.
 
 Such a long-tailed distribution is common for semantic segmentation datasets even if the number of images that contain specific label are pre-controlled. Such frequency distribution for pixels would be inevitable for objects existing in real-world. Taking "water tower" as an example, despite having 219 images, the number of pixels are less than many other labels in the dataset. In total, only 4.89% of pixels are unlabeled, and 34.17% and 60.94% of pixels belong to waterbodies (natural and artificial) and general labels, respectively. 
