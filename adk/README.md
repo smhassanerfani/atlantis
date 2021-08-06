@@ -6,17 +6,42 @@ In order to expand the size of ATLANTIS and minimize the effort to address chall
 
 Within the download you'll find the following directories and files. You'll see something like this:
 
-## dataset/
+## `dataset/`
 The first directory in ADK is dataset. This directory is comprised of two text files, a pysciprt and four five sub-directories representing different serieses which images are downloaded, annotated, analyzed and oranized.
 
-### dataset/image_directories.txt
+### `dataset/image_directories.txt`
 This text file lists image addresses in all five sub-directories.
 
-### dataset/image_list.txt
+### `dataset/image_list.txt`
 This text file inludes the name list of images which exists in this dataset. This id name is unique and created by Flickr.
 
-### dataset/s1a/breakwater/
-Each sub-directories includes some sub-sub-directories named with respect to one of waterbody labels. Considering `dataset/s1a/breakwater/` as an example, it c   
+### `dataset/s1a/breakwater/`
+Each sub-directories includes number of sub-sub-directories named with respect to one of waterbody labels. Considering `dataset/s1a/breakwater/` as an example, it consists of following files and directories:
+
+* `annotations.xml`: Annotation file exproted from [CVAT](https://github.com/openvinotoolkit/cvat). Images located in `images/` along with `annotations.xml` enables further modification on annotations by users. For this purpose, users can install CVAT and create a task using images of `images/`. 
+* `flickr.json`: In this file, all information associated with images of `images/` directory are stored.
+```
+[
+    {
+        "id": "30326712458",
+        "secret": "a9ff6805e0",
+        "server": "1899",
+        "farm": 2,
+        "license": 1,
+        "flickr_url": "https://farm2.staticflickr.com/1899/30326712458_a9ff6805e0_z.jpg",
+        "file_name": "30326712458.jpg",
+        "date_captured": "01/13/2020, 23:25:19",
+        "width": 640,
+        "height": 427
+    },
+    .
+    .
+    .
+```
+
+* `images/`:   
+* `masks/`:   
+* `rgb_masks/`:   
 
 ```text
 adk/
