@@ -1,0 +1,282 @@
+[
+    {
+        "name": "bicycle",
+        "color": "#004040",
+        "attributes": []
+    },
+    {
+        "name": "boat",
+        "color": "#4040c0",
+        "attributes": []
+    },
+    {
+        "name": "breakwater",
+        "color": "#172ece",
+        "attributes": []
+    },
+    {
+        "name": "bridge",
+        "color": "#e08000",
+        "attributes": []
+    },
+    {
+        "name": "bus",
+        "color": "#204080",
+        "attributes": []
+    },
+    {
+        "name": "canal",
+        "color": "#308d2e",
+        "attributes": []
+    },
+    {
+        "name": "car",
+        "color": "#2080c0",
+        "attributes": []
+    },
+    {
+        "name": "cliff",
+        "color": "#047db5",
+        "attributes": []
+    },
+    {
+        "name": "culvert",
+        "color": "#143890",
+        "attributes": []
+    },
+    {
+        "name": "cypress_tree",
+        "color": "#0c335b",
+        "attributes": []
+    },
+    {
+        "name": "dam",
+        "color": "#7dd16d",
+        "attributes": []
+    },
+    {
+        "name": "ditch",
+        "color": "#7fc485",
+        "attributes": []
+    },
+    {
+        "name": "fence",
+        "color": "#20e080",
+        "attributes": []
+    },
+    {
+        "name": "fire_hydrant",
+        "color": "#e0e000",
+        "attributes": []
+    },
+    {
+        "name": "fjord",
+        "color": "#49da6e",
+        "attributes": []
+    },
+    {
+        "name": "flood",
+        "color": "#520896",
+        "attributes": []
+    },
+    {
+        "name": "glaciers",
+        "color": "#3856f8",
+        "attributes": []
+    },
+    {
+        "name": "lake",
+        "color": "#2037eb",
+        "attributes": []
+    },
+    {
+        "name": "levee",
+        "color": "#2aaeab",
+        "attributes": []
+    },
+    {
+        "name": "lighthouse",
+        "color": "#a08060",
+        "attributes": []
+    },
+    {
+        "name": "mangrove",
+        "color": "#fee8f4",
+        "attributes": []
+    },
+    {
+        "name": "marsh",
+        "color": "#1cc0bd",
+        "attributes": []
+    },
+    {
+        "name": "motorcycle",
+        "color": "#80a0a0",
+        "attributes": []
+    },
+    {
+        "name": "offshore_platform",
+        "color": "#76a436",
+        "attributes": []
+    },
+    {
+        "name": "parking_meter",
+        "color": "#c020e0",
+        "attributes": []
+    },
+    {
+        "name": "person",
+        "color": "#c06060",
+        "attributes": []
+    },
+    {
+        "name": "pier",
+        "color": "#dd5810",
+        "attributes": []
+    },
+    {
+        "name": "pipeline",
+        "color": "#a95686",
+        "attributes": []
+    },
+    {
+        "name": "puddle",
+        "color": "#5cf456",
+        "attributes": []
+    },
+    {
+        "name": "rapids",
+        "color": "#be9a1a",
+        "attributes": []
+    },
+    {
+        "name": "reservoir",
+        "color": "#3a53cf",
+        "attributes": []
+    },
+    {
+        "name": "river",
+        "color": "#a060e0",
+        "attributes": []
+    },
+    {
+        "name": "river_delta",
+        "color": "#8ac8bb",
+        "attributes": []
+    },
+    {
+        "name": "road",
+        "color": "#20e0e0",
+        "attributes": []
+    },
+    {
+        "name": "sea",
+        "color": "#508080",
+        "attributes": []
+    },
+    {
+        "name": "ship",
+        "color": "#769ef8",
+        "attributes": []
+    },
+    {
+        "name": "shoreline",
+        "color": "#fe3659",
+        "attributes": []
+    },
+    {
+        "name": "sidewalk",
+        "color": "#108040",
+        "attributes": []
+    },
+    {
+        "name": "sky",
+        "color": "#508040",
+        "attributes": []
+    },
+    {
+        "name": "snow",
+        "color": "#104040",
+        "attributes": []
+    },
+    {
+        "name": "spillway",
+        "color": "#188bb1",
+        "attributes": []
+    },
+    {
+        "name": "swimming_pool",
+        "color": "#b00040",
+        "attributes": []
+    },
+    {
+        "name": "terrain",
+        "color": "#f04040",
+        "attributes": []
+    },
+    {
+        "name": "train",
+        "color": "#50a080",
+        "attributes": []
+    },
+    {
+        "name": "truck",
+        "color": "#906080",
+        "attributes": []
+    },
+    {
+        "name": "umbrella",
+        "color": "#d06080",
+        "attributes": []
+    },
+    {
+        "name": "vegetation",
+        "color": "#9020c0",
+        "attributes": []
+    },
+    {
+        "name": "wall",
+        "color": "#d020c0",
+        "attributes": []
+    },
+    {
+        "name": "water_tower",
+        "color": "#d68d03",
+        "attributes": []
+    },
+    {
+        "name": "water_well",
+        "color": "#fe1771",
+        "attributes": []
+    },
+    {
+        "name": "waterfall",
+        "color": "#2718ba",
+        "attributes": []
+    },
+    {
+        "name": "wetland",
+        "color": "#545b93",
+        "attributes": []
+    },
+    {
+        "name": "traffic_sign",
+        "color": "#502080",
+        "attributes": []
+    },
+    {
+        "name": "pole",
+        "color": "#60a0a0",
+        "attributes": []
+    },
+    {
+        "name": "hot_spring",
+        "color": "#1771c8",
+        "attributes": []
+    },
+    {
+        "name": "building",
+        "color": "#204000",
+        "attributes": []
+    }
+]
