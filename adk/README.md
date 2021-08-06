@@ -6,6 +6,18 @@ In order to expand the size of ATLANTIS and minimize the effort to address chall
 
 Within the download you'll find the following directories and files. You'll see something like this:
 
+## dataset/
+The first directory in ADK is dataset. This directory is comprised of two text files, a pysciprt and four five sub-directories representing different serieses which images are downloaded, annotated, analyzed and oranized.
+
+### dataset/image_directories.txt
+This text file lists image addresses in all five sub-directories.
+
+### dataset/image_list.txt
+This text file inludes the name list of images which exists in this dataset. This id name is unique and created by Flickr.
+
+### dataset/s1a/breakwater/
+Each sub-directories includes some sub-sub-directories named with respect to one of waterbody labels. Considering `dataset/s1a/breakwater/` as an example, it c   
+
 ```text
 adk/
     ├── dataset
