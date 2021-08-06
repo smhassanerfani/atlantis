@@ -2,50 +2,29 @@
 
 In order to expand the size of ATLANTIS and minimize the effort to address challenges associated with dataset development, we initiate ATLANTIS DEVELOPMENT KIT as an open community effort where experts in water resources communities can contribute in annotating and adding images to ATLANTIS. We developed different pipelines to facilitate downloading, annotating, organizing and analyzing new images. Here, we explained how you can use these pipelines whether for contribution to this project or for personal use.
 
+
+## Table of contents
+
+- [What's included](#whats-included)
+- [`dataset/`](#dataset)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [Community](#community)
+- [Versioning](#versioning)
+- [Creators](#creators)
+- [Thanks](#thanks)
+- [Copyright and license](#copyright-and-license)
+
+
+
 ## What's included
 
 Within the download you'll find the following directories and files. You'll see something like this:
 
-## `dataset/`
-The first directory in ADK is dataset. This directory is comprised of two text files, a pysciprt and four five sub-directories representing different serieses which images are downloaded, annotated, analyzed and oranized.
-
-### `dataset/image_directories.txt`
-This text file lists image addresses in all five sub-directories.
-
-### `dataset/image_list.txt`
-This text file inludes the name list of images which exists in this dataset. This id name is unique and created by Flickr.
-
-### `dataset/s1a/breakwater/`
-Each sub-directories includes number of sub-sub-directories named with respect to one of waterbody labels. Considering `dataset/s1a/breakwater/` as an example, it consists of following files and directories:
-
-* `annotations.xml`: Annotation file exproted from [CVAT](https://github.com/openvinotoolkit/cvat). Images located in `images/` along with `annotations.xml` enables further modification on annotations by users. For this purpose, users can install CVAT and create a task using images of `images/`. 
-* `flickr.json`: In this file, all information associated with images of `images/` directory are stored.
-```
-[
-    {
-        "id": "30326712458",
-        "secret": "a9ff6805e0",
-        "server": "1899",
-        "farm": 2,
-        "license": 1,
-        "flickr_url": "https://farm2.staticflickr.com/1899/30326712458_a9ff6805e0_z.jpg",
-        "file_name": "30326712458.jpg",
-        "date_captured": "01/13/2020, 23:25:19",
-        "width": 640,
-        "height": 427
-    },
-    .
-    .
-    .
-```
-
-* `images/`:   
-* `masks/`:   
-* `rgb_masks/`:   
-
 ```text
 adk/
     ├── dataset
+    │   ├── cvat_labels_constructor.json 
     │   ├── image_directories.txt
     │   ├── images_list.txt
     │   ├── s1a
@@ -130,3 +109,45 @@ adk/
         ├── pipeline.sh
         └── pyscript.py
 ```
+
+## `dataset/`
+The first directory in ADK is dataset. This directory is comprised of one json file, two text files, a pysciprt and five sub-directories representing different serieses which images are downloaded, annotated, analyzed and oranized.
+
+### `../cvat_labels_constructor.json`
+This json file includes all ATLANTIS labels compatible with [CVAT](https://github.com/openvinotoolkit/cvat). To add all 56 labels to CVAT, users can use this code.
+
+### `../image_directories.txt`
+This text file lists image addresses in all five sub-directories.
+
+### `../image_list.txt`
+This text file inludes the name list of images which exists in this dataset. This id name is unique and created by Flickr.
+
+### `../s1a/breakwater/`
+Each sub-directories includes number of sub-sub-directories named with respect to one of waterbody labels. Considering `dataset/s1a/breakwater/` as an example, it consists of following files and directories:
+
+* `annotations.xml`: Annotation file exproted from CVAT. Images located in `images/` along with `annotations.xml` enables further modification on annotations by users. For this purpose, users can install CVAT and create a task using images of `images/`. NOTE: the annotation labels must be constructed at this stage. Users can easily copy the label codes from `cvat_labels_constructor.json`. 
+
+* `flickr.json`: In this file, all information associated with images of `images/` directory in [Flikr](https://www.flickr.com/) database are stored as follow:
+
+```
+[
+    {
+        "id": "30326712458",
+        "secret": "a9ff6805e0",
+        "server": "1899",
+        "farm": 2,
+        "license": 1,
+        "flickr_url": "https://farm2.staticflickr.com/1899/30326712458_a9ff6805e0_z.jpg",
+        "file_name": "30326712458.jpg",
+        "date_captured": "01/13/2020, 23:25:19",
+        "width": 640,
+        "height": 427
+    },
+    .
+    .
+    .
+```
+
+* `images/`: This directory contains all `.jpg` images downloaded from Flickr.  
+* `masks/`: This directory includes all `.png` id masks correspondence with `.jpg` in `images/`.   
+* `rgb_masks/`: This directory includes all `.png` RGB masks correspondence with `.jpg` in `images/`.     
