@@ -7,6 +7,7 @@ In order to expand the size of ATLANTIS and minimize the effort to address chall
 - [What's included](#whats-included)
 - [`dataset/`](#dataset)
 - [`images_analyser/`](#images_analyser)
+- [`images_downloader/`](#images_downloader)
 
 ## What's included
 
@@ -73,6 +74,8 @@ adk/
     ├── images_downloader
     │   ├── images_downloader.py
     │   └── images_json_extractor.py
+    │   └── licenses_info.json
+    │   └── pipeline.sh
     ├── images_organizer
     │   ├── artificial_dataloader.sh
     │   ├── cp_code_train_val_test.sh
@@ -149,3 +152,8 @@ Images chosen for annotation are usually determined through procedural rules. Th
 ## `images_analyser/`
 This directory includes all python scripts that users need to convert rgb masks to id masks. First, labels information should be modified based on your dataset. `name` and `id` are considered based on the labels existing in the dataset, and `color` is the RGB code chosen for each label in CVAT. `color2id.py` creates both id masks and csv file which lists the number of pixels and segments of each label in the annotated masks existing in the directory. This information is useful for statistical analysis of number of pixels and segments in the dataset. Users can use the `pipeline.sh` to run the code through all image directories at once.
 
+## `images_downloader/`
+In order to download images from Flickr, users first need to apply for [Flickr API Key](https://www.flickr.com/services/api/misc.api_keys.html). Using `pipline.sh` data_root, api_key, labels_list and images_numbers should be set. NOTE: This code need [reuquests](https://docs.python-requests.org/en/master/) package, so before run the code, requests package should be installed.
+Many Flickr users have chosen to offer their work under a [Creative Commons](https://www.flickr.com/creativecommons/) license. In addition to Creative Commons licenses, "No known copyright restrictions" and "United States Government Work" will be requested by this code. Images for each license will be stored in indiviudal directory. `licenses_info.json` lists the name, id and url address for all licenses.
+
+After image download request, in each license directory, in addition to images, a `json_file.json` exists. This file lists the information attributed to downloaded images. It is so common that uers want to remove some irrelevant images. In order to update the `json_file.json` according to chosen images, `images_json_extractor.py` is provided. Using this code, users can easily eliminate the redandant records belonging to removed images.   
