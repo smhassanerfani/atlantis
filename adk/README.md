@@ -68,8 +68,8 @@ adk/
     │   └── xml_extractor.py
     ├── images_analyser
     │   ├── color2id.py
-    │   ├── pipeline.sh
-    │   └── spatial_analysis.py
+    │   ├── labels_info.json
+    │   └── pipeline.sh
     ├── images_downloader
     │   ├── images_downloader.py
     │   └── images_json_extractor.py
@@ -147,3 +147,5 @@ Each sub-directories includes number of sub-sub-directories named with respect t
 Images chosen for annotation are usually determined through procedural rules. They must both be relevant to the label and representative. However, sometimes, annotators decide to skip some images during annotation. In this situation, the exported xml file records the information of all images in order (annotated or skipped). So, if annotators want to reload the project for further modification, they must still include the skipped images in the project. This `xml_extractor.py` helps users and annotators by removing any skipped images from the xml file, allowing the annotator to reload the project with only the chosen images.
 
 ## `images_analyser/`
+This directory includes all python scripts that users need to convert rgb masks to id masks. First, labels information should be modified based on your dataset. `name` and `id` are considered based on the labels existing in the dataset, and `color` is the RGB code chosen for each label in CVAT. `color2id.py` creates both id masks and csv file which lists the number of pixels and segments of each label in the annotated masks existing in the directory. This information is useful for statistical analysis of number of pixels and segments in the dataset. Users can use the `pipeline.sh` to run the code through all image directories at once.
+
