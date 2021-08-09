@@ -1,0 +1,515 @@
+[
+    {
+        "name": "background",
+        "id": 0,
+        "color": [
+            0,
+            0,
+            0
+        ]
+    },
+    {
+        "name": "bicycle",
+        "id": 1,
+        "color": [
+            0,
+            64,
+            64
+        ]
+    },
+    {
+        "name": "boat",
+        "id": 2,
+        "color": [
+            64,
+            64,
+            192
+        ]
+    },
+    {
+        "name": "breakwater",
+        "id": 3,
+        "color": [
+            23,
+            46,
+            206
+        ]
+    },
+    {
+        "name": "bridge",
+        "id": 4,
+        "color": [
+            224,
+            128,
+            0
+        ]
+    },
+    {
+        "name": "building",
+        "id": 5,
+        "color": [
+            32,
+            64,
+            0
+        ]
+    },
+    {
+        "name": "bus",
+        "id": 6,
+        "color": [
+            32,
+            64,
+            128
+        ]
+    },
+    {
+        "name": "canal",
+        "id": 7,
+        "color": [
+            48,
+            141,
+            46
+        ]
+    },
+    {
+        "name": "car",
+        "id": 8,
+        "color": [
+            32,
+            128,
+            192
+        ]
+    },
+    {
+        "name": "cliff",
+        "id": 9,
+        "color": [
+            4,
+            125,
+            181
+        ]
+    },
+    {
+        "name": "culvert",
+        "id": 10,
+        "color": [
+            20,
+            56,
+            144
+        ]
+    },
+    {
+        "name": "cypress_tree",
+        "id": 11,
+        "color": [
+            12,
+            51,
+            91
+        ]
+    },
+    {
+        "name": "dam",
+        "id": 12,
+        "color": [
+            125,
+            209,
+            109
+        ]
+    },
+    {
+        "name": "ditch",
+        "id": 13,
+        "color": [
+            127,
+            196,
+            133
+        ]
+    },
+    {
+        "name": "fence",
+        "id": 14,
+        "color": [
+            32,
+            224,
+            128
+        ]
+    },
+    {
+        "name": "fire_hydrant",
+        "id": 15,
+        "color": [
+            224,
+            224,
+            0
+        ]
+    },
+    {
+        "name": "fjord",
+        "id": 16,
+        "color": [
+            73,
+            218,
+            110
+        ]
+    },
+    {
+        "name": "flood",
+        "id": 17,
+        "color": [
+            82,
+            8,
+            150
+        ]
+    },
+    {
+        "name": "glaciers",
+        "id": 18,
+        "color": [
+            56,
+            86,
+            248
+        ]
+    },
+    {
+        "name": "hot_spring",
+        "id": 19,
+        "color": [
+            23,
+            113,
+            200
+        ]
+    },
+    {
+        "name": "lake",
+        "id": 20,
+        "color": [
+            32,
+            55,
+            235
+        ]
+    },
+    {
+        "name": "levee",
+        "id": 21,
+        "color": [
+            42,
+            174,
+            171
+        ]
+    },
+    {
+        "name": "lighthouse",
+        "id": 22,
+        "color": [
+            160,
+            128,
+            96
+        ]
+    },
+    {
+        "name": "mangrove",
+        "id": 23,
+        "color": [
+            254,
+            232,
+            244
+        ]
+    },
+    {
+        "name": "marsh",
+        "id": 24,
+        "color": [
+            28,
+            192,
+            189
+        ]
+    },
+    {
+        "name": "motorcycle",
+        "id": 25,
+        "color": [
+            128,
+            160,
+            160
+        ]
+    },
+    {
+        "name": "offshore_platform",
+        "id": 26,
+        "color": [
+            118,
+            164,
+            54
+        ]
+    },
+    {
+        "name": "parking_meter",
+        "id": 27,
+        "color": [
+            192,
+            32,
+            224
+        ]
+    },
+    {
+        "name": "person",
+        "id": 28,
+        "color": [
+            192,
+            96,
+            96
+        ]
+    },
+    {
+        "name": "pier",
+        "id": 29,
+        "color": [
+            221,
+            88,
+            16
+        ]
+    },
+    {
+        "name": "pipeline",
+        "id": 30,
+        "color": [
+            169,
+            86,
+            134
+        ]
+    },
+    {
+        "name": "pole",
+        "id": 31,
+        "color": [
+            96,
+            160,
+            160
+        ]
+    },
+    {
+        "name": "puddle",
+        "id": 32,
+        "color": [
+            92,
+            244,
+            86
+        ]
+    },
+    {
+        "name": "rapids",
+        "id": 33,
+        "color": [
+            190,
+            154,
+            26
+        ]
+    },
+    {
+        "name": "reservoir",
+        "id": 34,
+        "color": [
+            58,
+            83,
+            207
+        ]
+    },
+    {
+        "name": "river",
+        "id": 35,
+        "color": [
+            160,
+            96,
+            224
+        ]
+    },
+    {
+        "name": "river_delta",
+        "id": 36,
+        "color": [
+            138,
+            200,
+            187
+        ]
+    },
+    {
+        "name": "road",
+        "id": 37,
+        "color": [
+            32,
+            224,
+            224
+        ]
+    },
+    {
+        "name": "sea",
+        "id": 38,
+        "color": [
+            80,
+            128,
+            128
+        ]
+    },
+    {
+        "name": "ship",
+        "id": 39,
+        "color": [
+            118,
+            158,
+            248
+        ]
+    },
+    {
+        "name": "shoreline",
+        "id": 40,
+        "color": [
+            254,
+            54,
+            89
+        ]
+    },
+    {
+        "name": "sidewalk",
+        "id": 41,
+        "color": [
+            16,
+            128,
+            64
+        ]
+    },
+    {
+        "name": "sky",
+        "id": 42,
+        "color": [
+            80,
+            128,
+            64
+        ]
+    },
+    {
+        "name": "snow",
+        "id": 43,
+        "color": [
+            16,
+            64,
+            64
+        ]
+    },
+    {
+        "name": "spillway",
+        "id": 44,
+        "color": [
+            24,
+            139,
+            177
+        ]
+    },
+    {
+        "name": "swimming_pool",
+        "id": 45,
+        "color": [
+            176,
+            0,
+            64
+        ]
+    },
+    {
+        "name": "terrain",
+        "id": 46,
+        "color": [
+            240,
+            64,
+            64
+        ]
+    },
+    {
+        "name": "traffic_sign",
+        "id": 47,
+        "color": [
+            80,
+            32,
+            128
+        ]
+    },
+    {
+        "name": "train",
+        "id": 48,
+        "color": [
+            80,
+            160,
+            128
+        ]
+    },
+    {
+        "name": "truck",
+        "id": 49,
+        "color": [
+            144,
+            96,
+            128
+        ]
+    },
+    {
+        "name": "umbrella",
+        "id": 50,
+        "color": [
+            208,
+            96,
+            128
+        ]
+    },
+    {
+        "name": "vegetation",
+        "id": 51,
+        "color": [
+            144,
+            32,
+            192
+        ]
+    },
+    {
+        "name": "wall",
+        "id": 52,
+        "color": [
+            208,
+            32,
+            192
+        ]
+    },
+    {
+        "name": "water_tower",
+        "id": 53,
+        "color": [
+            214,
+            141,
+            3
+        ]
+    },
+    {
+        "name": "water_well",
+        "id": 54,
+        "color": [
+            254,
+            23,
+            113
+        ]
+    },
+    {
+        "name": "waterfall",
+        "id": 55,
+        "color": [
+            39,
+            24,
+            186
+        ]
+    },
+    {
+        "name": "wetland",
+        "id": 56,
+        "color": [
+            84,
+            91,
+            147
+        ]
+    }
+]
