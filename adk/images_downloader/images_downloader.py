@@ -5,76 +5,61 @@ import requests
 from datetime import datetime
 from PIL import Image
 import io
+import argparse
 
-# Key:
-api_key = 'da03d4d2c9d70753c5b918009711b9ea'
+DATASET_ROOT = "./"
+LABELS_LIST = ["lake", "river"]
+IMAGES_NUMBER = 5
 
-# Secret:
-secret = 'f35c6f99121e3e83'
 
-# natural_list = list()
-# artificial_list = list()
-# path = "./"
-# with open(path, encoding="utf8", errors='ignore') as csvfile:
-#     csv_list = csv.DictReader(csvfile)
-#     for row in csv_list:
-#         natural_list.append(row['natural'])
-#         artificial_list.append(row['artificial'])
+def get_arguments():
+    parser = argparse.ArgumentParser(
+        description="This code dowloads images and images attributes from Flickr databes.")
+    parser.add_argument("-k", "--api-key", type=str,
+                        required=True, help="Flickr API Key.")
+    parser.add_argument("-n", "--images-number", type=int, default=IMAGES_NUMBER,
+                        required=False, help="Number of requests (images) for each license.")
+    parser.add_argument("-r", "--dataset-root", type=str, default=DATASET_ROOT, required=False,
+                        help="The path label directories are stored.")
+    parser.add_argument("-l", "--labels-list", type=str, nargs="+", default=LABELS_LIST, required=False,
+                        help="The list of labels.")
 
-# natural_list = list(filter(None, natural_list))
-# artificial_list = list(filter(None, artificial_list))
+    return parser.parse_args()
 
-labels_list = ["lake"]
 
-licenses = [
-    {"url": "http://creativecommons.org/licenses/by-nc-sa/2.0/",
-        "id": 1, "name": "Attribution-NonCommercial-ShareAlike License"},
-    {"url": "http://creativecommons.org/licenses/by-nc/2.0/",
-        "id": 2, "name": "Attribution-NonCommercial License"},
-    {"url": "http://creativecommons.org/licenses/by-nc-nd/2.0/",
-        "id": 3, "nameswimming pool": "Attribution-NonCommercial-NoDerivs License"},
-    {"url": "http://creativecommons.org/licenses/by/2.0/",
-        "id": 4, "name": "Attribution License"},
-    {"url": "http://creativecommons.org/licenses/by-sa/2.0/",
-        "id": 5, "name": "Attribution-ShareAlike License"},
-    {"url": "http://creativecommons.org/licenses/by-nd/2.0/",
-        "id": 6, "name": "Attribution-NoDerivs License"},
-    {"url": "http://flickr.com/commons/usage/", "id": 7,
-        "name": "No known copyright restrictions"},
-    {"url": "http://www.usa.gov/copyright.shtml",
-        "id": 8, "name": "United States Government Work"}
-]
+args = get_arguments()
 
-# os.chdir('/home/serfani/Downloads/new_dataset')
-# root_path = os.getcwd()
-root_path = '/home/serfani/Downloads/new_dataset'
 
-try:
-    os.makedirs(root_path)
-except FileExistsError:
-    pass
-
-for label in labels_list:
+def makedir(dirname):
     try:
-        label_path = os.path.join(root_path, label)
-        os.makedirs(label_path)
+        os.makedirs(dirname)
     except FileExistsError:
         pass
 
+
+with open("licenses_info.json", 'r') as jf:
+    licenses = json.load(jf)
+
+makedir(args.dataset_root)
+
+for label in args.labels_list:
+
+    label_path = os.path.join(args.dataset_root, label)
+    makedir(label_path)
+
     for license in licenses:
+
         license_path = os.path.join(label_path, str(license["id"]))
-        try:
-            os.makedirs(license_path)
-        except FileExistsError:
-            pass
+        makedir(license_path)
 
         tag = label
         license_type = license["id"]
-        per_page = 50
+        per_page = args.images_number
         page_number = 1
 
-        url = 'https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key={api_key}&tags={tag}&tag_mode={tm}&license={license_type}&min_upload_date={date}&per_page={per_page}&page={page_number}&format=json&nojsoncallback=1'.format(
-            api_key=api_key, tag=tag, tm="all", license_type=license_type, date=1577836801, per_page=per_page, page_number=page_number)
+        # https://www.flickr.com/services/api/flickr.photos.search.html
+        url = 'https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key={api_key}&tags={tag}&tag_mode={tm}&license={license_type}&per_page={per_page}&page={page_number}&format=json&nojsoncallback=1'.format(
+            api_key=args.api_key, tag=tag, tm="all", license_type=license_type, per_page=per_page, page_number=page_number)
 
         responses = requests.get(url)
         data = responses.json()
@@ -112,4 +97,4 @@ for label in labels_list:
             json.dump(data, tf, indent=4)
             print(f"{license_path} is done!")
 
-print("it's finish")
+    print(f"Downling \"{label}\" images is finish!")
