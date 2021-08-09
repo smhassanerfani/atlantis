@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Attribution-NonCommercial-ShareAlike License",
+        "id": 1,
+        "url": "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+    },
+    {
+        "name": "Attribution-NonCommercial License",
+        "id": 2,
+        "url": "http://creativecommons.org/licenses/by-nc/2.0/"
+    },
+    {
+        "name": "Attribution-NonCommercial-NoDerivs License",
+        "id": 3,
+        "url": "http://creativecommons.org/licenses/by-nc-nd/2.0/"
+    },
+    {
+        "name": "Attribution License",
+        "id": 4,
+        "url": "http://creativecommons.org/licenses/by/2.0/"
+    },
+    {
+        "name": "Attribution-ShareAlike License",
+        "id": 5,
+        "url": "http://creativecommons.org/licenses/by-sa/2.0/"
+    },
+    {
+        "name": "Attribution-NoDerivs License",
+        "id": 6,
+        "url": "http://creativecommons.org/licenses/by-nd/2.0/"
+    },
+    {
+        "name": "No known copyright restrictions",
+        "id": 7,
+        "url": "http://flickr.com/commons/usage/"
+    },
+    {
+        "name": "United States Government Work",
+        "id": 8,
+        "url": "http://www.usa.gov/copyright.shtml"
+    }
+]
