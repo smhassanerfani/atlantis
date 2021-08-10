@@ -8,6 +8,7 @@ In order to expand the size of ATLANTIS and minimize the effort to address chall
 - [`dataset/`](#dataset)
 - [`images_analyser/`](#images_analyser)
 - [`images_downloader/`](#images_downloader)
+- [`images_organizer/`](#images_organizer)
 
 ## What's included
 
@@ -73,15 +74,13 @@ adk/
     │   └── pipeline.sh
     ├── images_downloader
     │   ├── images_downloader.py
-    │   └── images_json_extractor.py
-    │   └── licenses_info.json
+    │   ├── images_json_extractor.py
+    │   ├── licenses_info.json
     │   └── pipeline.sh
     ├── images_organizer
-    │   ├── artificial_dataloader.sh
-    │   ├── cp_code_train_val_test.sh
-    │   ├── images_masks_diff_finder.sh
-    │   ├── images_pooling.sh
-    │   └── train_val_test_distributor.sh
+    │   ├── dataloader.sh
+    │   ├── dataloader_reverse.sh
+    │   └── images_pooling.sh
     ├── inconsistency_analysis
     │   ├── first_edition
     │   │   ├── ammar
@@ -157,3 +156,5 @@ In order to download images from Flickr, users first need to apply for [Flickr A
 Many Flickr users have chosen to offer their work under a [Creative Commons](https://www.flickr.com/creativecommons/) license. In addition to Creative Commons licenses, "No known copyright restrictions" and "United States Government Work" will be requested by this code. Images for each license will be stored in indiviudal directory. `licenses_info.json` lists the name, id and url address for all licenses.
 
 During downloading images through Flickr request, a `json_file.json` is downloaded for each license directory. This file lists the information attributed to downloaded images. It is so common that uers want to remove some irrelevant images. Images of each label, normally are pooled into one directory for annotation. After annotation is done, duplicated and skipped images are removed from the pooled directory. In order to update the `json_file.json` according to chosen images, `images_json_extractor.py` is provided. Using this code, users can easily eliminate the redandant records belonging to removed images.
+
+## `images_organizer/`
