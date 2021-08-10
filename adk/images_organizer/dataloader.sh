@@ -1,13 +1,12 @@
 #! /bin/bash
 
-dir=/home/serfani/Downloads/atex_analysis;
-subdirs=$(echo $(ls ${dir}));
+# origin directory & sub directories
+odir=/home/serfani/Downloads/atlantis/s1n;
+subdirs=$(echo $(ls ${odir}));
 
-ddir=/home/serfani/Downloads/atex;
+# destination directory
+ddir=/home/serfani/Downloads/atlantis_new;
 
-# for sd in ${subdirs}; do
-# 	paste <(echo ${sd}) <(echo $(ls ${sd}) | wc)
-# done;
 
 sdirs=("delta" "estuary" "flood" "glaciers")
 ntrains=(1155 439 989 844)
@@ -17,15 +16,15 @@ ntests=(330 125 283 240)
 for i in "${!sdirs[@]}"; do 
 	echo $i
 	sdir=${sdirs[$i]}; ntrain=${ntrains[$i]}; nval=${nvals[$i]}; ntest=${ntests[$i]};
-	find ${dir}/${sdir}/*.jpg |cut -d "/" -f 7 | shuf > ${dir}/${sdir}_images.txt
+	find ${odir}/${sdir}/*.jpg | cut -d "/" -f 7 | shuf > ${odir}/${sdir}_images.txt
 	
-	cat ${dir}/${sdir}_images.txt | head -n ${ntrain} > ${dir}/${sdir}_train_images.txt
-	cat ${dir}/${sdir}_images.txt | tail -n ${ntest} > ${dir}/${sdir}_test_images.txt
-	cat ${dir}/${sdir}_images.txt | head -n -${ntest}| tail -n ${nval} > ${dir}/${sdir}_val_images.txt
+	cat ${odir}/${sdir}_images.txt | head -n ${ntrain} > ${odir}/${sdir}_train_images.txt
+	cat ${odir}/${sdir}_images.txt | tail -n ${ntest} > ${odir}/${sdir}_test_images.txt
+	cat ${odir}/${sdir}_images.txt | head -n -${ntest}| tail -n ${nval} > ${odir}/${sdir}_val_images.txt
 
-	rsync --files-from=${dir}/${sdir}_train_images.txt ${dir}/${sdir} ${ddir}/train/${sdir}
-	rsync --files-from=${dir}/${sdir}_test_images.txt ${dir}/${sdir} ${ddir}/test/${sdir}
-	rsync --files-from=${dir}/${sdir}_val_images.txt ${dir}/${sdir} ${ddir}/val/${sdir}
+	rsync --files-from=${odir}/${sdir}_train_images.txt ${odir}/${sdir} ${ddir}/train/${sdir}
+	rsync --files-from=${odir}/${sdir}_test_images.txt ${odir}/${sdir} ${ddir}/test/${sdir}
+	rsync --files-from=${odir}/${sdir}_val_images.txt ${odir}/${sdir} ${ddir}/val/${sdir}
 
 
 
