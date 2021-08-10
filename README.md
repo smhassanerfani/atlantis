@@ -22,6 +22,19 @@ The ATLANTIS dataset is designed and developed with the goal of capturing a wide
 
 In order to gather a corpus of images, we have used Flickr API to query and collect 800 "medium-sized" unique images for each label based on seven commonly used "Creative Commons" and "United States Government Work" licenses. Downloaded images were then filtered by a two-stage hierarchical procedure. In the first stage, each annotator was assigned to review a specific list of labels and remove irrelevant images based on that specific list of labels. In the second stage, several meetings were held between the entire annotation team and the project coordinator to finalize the images which appropriately represent each of 56 labels. Finally, images were annotated by annotators who have solid water resources engineering background as well as experience working with the [CVAT](https://github.com/openvinotoolkit/cvat), which is a free, open source, and web-based image/video annotation tool. If you wish to contribute to this project or you want to develop a semantic segmentation dataset, please check [ATLANTIS DEVELOPMENT KIT](https://github.com/smhassanerfani/atlantis/tree/master/adk).
 
+<TABLE>
+  <TR>
+     <TD><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/46882608915.png" width="100%" /></TD>
+     <TD><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/49216008106.png" width="100%" /></TD>
+     <TD><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/9954579843.png" width="100%" /></TD>
+  </TR>
+  <TR>
+     <TD align="center"><a href="https://youtu.be/HD9_MBwlGFE">(Video 1)</a></TD>
+     <TD align="center"><a href="https://youtu.be/HD9_MBwlGFE">(Video 2)</a></TD>
+     <TD align="center"><a href="https://youtu.be/HD9_MBwlGFE">(Video 3)</a></TD>
+  </TR>
+</TABLE>
+
 ## Dataset Statistics
 
 Figure 3 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies.
