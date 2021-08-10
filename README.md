@@ -24,9 +24,9 @@ In order to gather a corpus of images, we have used Flickr API to query and coll
 
 <TABLE>
   <TR>
-     <TD><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/46882608915.png" width="100%" /></TD>
-     <TD><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/49216008106.png" width="100%" /></TD>
-     <TD><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/9954579843.png" width="100%" /></TD>
+     <TD><a href="https://youtu.be/HD9_MBwlGFE"><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/46882608915.png" width="100%" /></a></TD>
+     <TD><a href="https://youtu.be/5JvMjWNVkKM"><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/49216008106.png" width="100%" /></a></TD>
+     <TD><a href="https://youtu.be/wsnWqU6EnGo"><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/9954579843.png" width="100%" /></a></TD>
   </TR>
   <TR>
      <TD align="center"><a href="https://youtu.be/HD9_MBwlGFE">(Video 1)</a></TD>
