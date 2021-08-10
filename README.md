@@ -30,8 +30,8 @@ In order to gather a corpus of images, we have used Flickr API to query and coll
   </TR>
   <TR>
      <TD align="center"><a href="https://youtu.be/HD9_MBwlGFE">(Video 1)</a></TD>
-     <TD align="center"><a href="https://youtu.be/HD9_MBwlGFE">(Video 2)</a></TD>
-     <TD align="center"><a href="https://youtu.be/HD9_MBwlGFE">(Video 3)</a></TD>
+     <TD align="center"><a href="https://youtu.be/5JvMjWNVkKM">(Video 2)</a></TD>
+     <TD align="center"><a href="https://youtu.be/wsnWqU6EnGo">(Video 3)</a></TD>
   </TR>
 </TABLE>
 
