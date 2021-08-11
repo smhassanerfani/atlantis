@@ -1,5 +1,5 @@
 dir="/home/serfani/Downloads/atlantis/s1a"
-sdirs=$(echo $(ls /home/serfani/Downloads/atlantis/s1a));
+sdirs=$(echo $(ls ${dir}));
 
 for sdir in ${sdirs}; do
     licenses=$(echo $(ls ${dir}/${sdir}));
