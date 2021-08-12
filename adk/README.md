@@ -9,6 +9,7 @@ In order to expand the size of ATLANTIS and minimize the effort to address chall
 - [`images_analyser/`](#images_analyser)
 - [`images_downloader/`](#images_downloader)
 - [`images_organizer/`](#images_organizer)
+- [`inconsistency_analysis/`](#inconsistency_analysis)
 
 ## What's included
 
@@ -82,25 +83,38 @@ adk/
     │   ├── dataloader_reverse.sh
     │   └── images_pooling.sh
     ├── inconsistency_analysis
-    │   ├── first_edition
-    │   │   ├── ammar
-    │   │   ├── ashlin
-    │   │   ├── ground_truth
-    │   │   ├── reddy
-    │   │   └── tripp
-    │   ├── models_evaluation
-    │   │   ├── compute_iou.py
-    │   │   ├── labels_ID.json
-    │   │   ├── pipeline.sh
-    │   │   └── requirements.txt
-    │   └── second_edition
-    │       ├── ammar
-    │       ├── ashlin
-    │       └── tripp
+    │  ├── codes
+    │  │   ├── compute_iou.py
+    │  │   ├── labels_ID.json
+    │  │   └── pipeline.sh
+    │  ├── data
+    │  │   ├── annotator1
+    │  │   │   ├── imasks_list.txt
+    │  │   │   └── tmasks
+    │  │   ├── annotator2
+    │  │   │   ├── imasks_list.txt
+    │  │   │   └── tmasks
+    │  │   ├── annotator3
+    │  │   │   ├── imasks_list.txt
+    │  │   │   └── tmasks
+    │  │   └── tground_truth
+    │  └── supplementary_material
+    │    ├── annotator1
+    │    │   ├── annotations.xml
+    │    │   ├── labels_stat.csv
+    │    │   └── SegmentationClass
+    │    ├── annotator2
+    │    │   ├── annotations.xml
+    │    │   ├── labels_stat.csv
+    │    │   └── SegmentationClass
+    │    └── annotator3
+    │      ├── annotations.xml
+    │      ├── labels_stat.csv
+    │      └── SegmentationClass
     └── waterbody_extractor
-        ├── labels_ID.json
-        ├── pipeline.sh
-        └── pyscript.py
+      ├── labels_ID.json
+      ├── pipeline.sh
+      └── pyscript.py
 ```
 
 ## `dataset/`
@@ -158,3 +172,4 @@ Many Flickr users have chosen to offer their work under a [Creative Commons](htt
 During downloading images through Flickr request, a `json_file.json` is downloaded for each license directory. This file lists the information attributed to downloaded images. It is so common that uers want to remove some irrelevant images. Images of each label, normally are pooled into one directory for annotation. After annotation is done, duplicated and skipped images are removed from the pooled directory. In order to update the `json_file.json` according to chosen images, `images_json_extractor.py` is provided. Using this code, users can easily eliminate the redandant records belonging to removed images.
 
 ## `images_organizer/`
+## `inconsistency_analysis/`
