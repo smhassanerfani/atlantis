@@ -173,3 +173,4 @@ During downloading images through Flickr request, a `json_file.json` is download
 
 ## `images_organizer/`
 ## `inconsistency_analysis/`
+While one image is annotated by one annotator for ATLANTIS, we perform additional consistency analysis across annotators and over time for an annotator. We choose 52 images from ATLANTIS, by including both images that are highly susceptible to wrong labelling and that contain objects prone to be either left unannotated or wrongly annotated. We ask three annotators to annotate them again and compare the results against the already approved ground truth in ATLANTIS. The accuracy and mIoU in terms of all 52 images and the subsets of images that had been annotated by themselves before 
