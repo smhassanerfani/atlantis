@@ -1,4 +1,3 @@
-#a
 """
 # Code borrowded from:
 # https://github.com/zijundeng/pytorch-semantic-segmentation/blob/master/utils/joint_transforms.py
