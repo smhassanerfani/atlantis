@@ -15,7 +15,7 @@ from models.loss import FocalLoss
 from AtlantisLoader import AtlantisDataSet
 import joint_transforms as joint_transforms
 
-INPUT_SIZE = '640'
+INPUT_SIZE = '480'
 MODEL = 'PSPNet'
 NUM_CLASSES = 56
 SNAPSHOT_DIR = './snapshots/psp'
@@ -122,11 +122,12 @@ def main():
                                            ignore_index=0),
         joint_transforms.Resize(args.input_size),
         joint_transforms.RandomHorizontallyFlip()]
+
     train_joint_transform = joint_transforms.Compose(
         train_joint_transform_list)
 
     trainloader = data.DataLoader(AtlantisDataSet(args.data_dir, split='train', joint_transform=train_joint_transform),
-                                  batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
+                                  batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=False)
 
     optimizer = optim.SGD(model.parameters(),
                           lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
@@ -142,6 +143,8 @@ def main():
         for images, labels, _, _, _ in trainloader:
 
             i_iter += args.batch_size
+            optimizer.zero_grad()
+
             lr = lr_poly(args.learning_rate, i_iter, args.num_epochs *
                          len(trainloader) * args.batch_size, args.power)
             adjust_learning_rate(optimizer, lr)
@@ -152,12 +155,13 @@ def main():
             aux, pred = model(images)
             pred = interp(pred)
             aux = interp(aux)
+
             loss = seg_loss(pred, labels) + 0.4 * seg_loss(aux, labels)
             loss.backward()
             optimizer.step()
 
-            print('epoch = {0:4d}, iter = {1:8d}/{2:8d}, loss_seg = {3:.3f}'.format(
-                epoch, i_iter, args.num_epochs * len(trainloader), loss))
+            print(
+                f'epoch = {epoch:4d}, iter = {i_iter:6d}/{args.num_epochs * len(trainloader):6d}, loss_seg = {loss:.3f}, lr = {lr:.6f}')
         torch.save(model.state_dict(), osp.join(
             args.snapshot_dir, 'epoch' + str(epoch) + '.pth'))
 
