@@ -143,7 +143,7 @@ class ResNet(nn.Module):
                     stride=stride,
                     bias=False
                 ),
-                BatchNorm2d(planes * block.expansion)
+                BatchNorm2d(planes * block.expansion, affine=True)
             )
 
         layers = []
