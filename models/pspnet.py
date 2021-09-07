@@ -24,31 +24,32 @@ class Bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = BatchNorm2d(planes * 4)
         self.relu = nn.ReLU(inplace=False)
-        self.identity_downsample = downsample
+        self.relu_inplace = nn.ReLU(inplace=True)
+        self.downsample = downsample
         self.dilation = dilation
         self.stride = stride
 
     def forward(self, x):
-        identity = x.clone()
+        identity = x
 
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = self.relu(out)
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
 
-        out = self.conv2(out)
-        out = self.bn2(out)
-        out = self.relu(out)
+        x = self.conv2(x)
+        x = self.bn2(x)
+        x = self.relu(x)
 
-        out = self.conv3(out)
-        out = self.bn3(out)
+        x = self.conv3(x)
+        x = self.bn3(x)
 
-        if self.identity_downsample is not None:
-            identity = self.identity_downsample(identity)
+        if self.downsample is not None:
+            identity = self.downsample(identity)
 
-        out = out + identity
-        out = self.relu(out)
+        x = x + identity
+        x = self.relu_inplace(x)
 
-        return out
+        return x
 
 class PSPModule(nn.Module):
 
@@ -133,9 +134,9 @@ class ResNet(nn.Module):
         return aux, x
 
     def _make_layer(self, block, planes, blocks, stride=1, dilation=1, multi_grid=1):
-        identity_downsample = None
+        downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
-            identity_downsample = nn.Sequential(
+            downsample = nn.Sequential(
                 nn.Conv2d(
                     self.inplanes,
                     planes * block.expansion,
@@ -150,7 +151,7 @@ class ResNet(nn.Module):
         def generate_multi_grid(index, grids): return grids[index % len(
             grids)] if isinstance(grids, tuple) else 1
         layers.append(block(self.inplanes, planes, stride, dilation=dilation,
-                            downsample=identity_downsample, multi_grid=generate_multi_grid(0, multi_grid)))
+                            downsample=downsample, multi_grid=generate_multi_grid(0, multi_grid)))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(block(self.inplanes, planes, dilation=dilation,
