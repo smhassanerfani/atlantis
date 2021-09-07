@@ -9,8 +9,7 @@ from torch.utils import data
 import torch.backends.cudnn as cudnn
 
 from models.pspnet import PSPNet
-
-from models.loss import FocalLoss
+from utils.plrds import adjust_learning_rate
 
 from AtlantisLoader import AtlantisDataSet
 import joint_transforms as joint_transforms
@@ -18,16 +17,16 @@ import joint_transforms as joint_transforms
 INPUT_SIZE = '480'
 MODEL = 'PSPNet'
 NUM_CLASSES = 56
-SNAPSHOT_DIR = './snapshots/psp'
+SNAPSHOT_DIR = './snapshots/test/'
 DATA_DIRECTORY = './atlantis'
-BATCH_SIZE = 1
+BATCH_SIZE = 2
 NUM_WORKERS = 4
 LEARNING_RATE = 2.5e-4
 MOMENTUM = 0.9
 WEIGHT_DECAY = 0.0001
 NUM_EPOCHS = 30
 POWER = 0.9
-RESTORE_FROM = './models/resnet101_imagenet.pth'
+RESTORE_FROM = './snapshots/pspnet_trained_state_dict/epoch29_imagenet.pth'
 
 
 def get_arguments():
@@ -63,17 +62,6 @@ def get_arguments():
 
 args = get_arguments()
 
-
-def lr_poly(base_lr, iter, max_iter, power):
-    return base_lr * ((1 - float(iter) / max_iter) ** (power))
-
-
-def adjust_learning_rate(optimizer, lr):
-    optimizer.param_groups[0]['lr'] = lr
-    if len(optimizer.param_groups) > 1:
-        optimizer.param_groups[1]['lr'] = lr * 10
-
-
 def main():
 
     if not os.path.exists(args.snapshot_dir):
@@ -89,16 +77,17 @@ def main():
     new_params = model.state_dict().copy()
 
     for key, value in saved_state_dict.items():
-        if (key.split(".")[0] not in ["head", "dsn", "fc"]):
+        if key.split(".")[0] not in ["head", "dsn", "fc"]:
             # print(key)
             new_params[key] = value
 
-    model.load_state_dict(new_params, strict=False)
+    model.load_state_dict(new_params)
     # print(model)
+    # exit()
 
+    model = model.cuda()
     model.train()
-    model.cuda()
-    # torch.backends.cudnn.enabled = False
+
     cudnn.enabled = True
     cudnn.benchmark = True
 
@@ -116,11 +105,11 @@ def main():
         train_joint_transform_list)
 
     trainloader = data.DataLoader(AtlantisDataSet(args.data_dir, split='train', joint_transform=train_joint_transform),
-                                  batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=False)
+                                  batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
+                                  pin_memory=True, drop_last=False)
 
     optimizer = optim.SGD(model.parameters(),
                           lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer.zero_grad()
     seg_loss = torch.nn.CrossEntropyLoss(ignore_index=255)
 
     interp = nn.Upsample(size=(input_size, input_size),
@@ -131,15 +120,14 @@ def main():
     for epoch in range(args.num_epochs):
         for images, labels, _, _, _ in trainloader:
 
-            i_iter += args.batch_size
             optimizer.zero_grad()
 
-            lr = lr_poly(args.learning_rate, i_iter, args.num_epochs *
-                         len(trainloader) * args.batch_size, args.power)
-            adjust_learning_rate(optimizer, lr)
+            i_iter += images.shape[0]
+            lr = adjust_learning_rate(
+                args, optimizer, i_iter, args.num_epochs * len(trainloader.dataset))
 
             images = images.cuda()
-            labels = labels.long().cuda()
+            labels = labels.cuda()
 
             aux, pred = model(images)
             pred = interp(pred)
@@ -150,7 +138,7 @@ def main():
             optimizer.step()
 
             print(
-                f'epoch = {epoch:4d}, iter = {i_iter:6d}/{args.num_epochs * len(trainloader):6d}, loss_seg = {loss:.3f}, lr = {lr:.6f}')
+                f"epoch = {epoch:2d}, iter = {i_iter:6d}/{args.num_epochs * len(trainloader.dataset):6d}, {i_iter/(args.num_epochs * len(trainloader.dataset)):2.2%}, loss_seg = {loss:.3f}, lr = {lr:.6f}")
         torch.save(model.state_dict(), osp.join(
             args.snapshot_dir, 'epoch' + str(epoch) + '.pth'))
 
