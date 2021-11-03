@@ -40,11 +40,11 @@ def compute_mIoU(gt_dir, pred_dir, json_dir="./"):
                 gt_imgs.append(os.path.join(root, file))
                 pred_imgs.append(os.path.join(preds_base, file))
 
-    with open(join(json_dir, 'labels_ID.json'), 'r') as jf:
+    with open(join(json_dir, 'labels_info.json'), 'r') as jf:
         info = json.load(jf)
 
     num_classes = len(info)
-    name_classes = [key for key in info.keys()]
+    name_classes = [entity["name"] for entity in info]
 
     hist = np.zeros((num_classes, num_classes))
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-gt', '--gt-dir', default='../atlantis/masks/val',
                         type=str, help='directory of inconsistency analysis data')
-    parser.add_argument('-pd', '--pred-dir', default="../snapshots/pspnet_ep29_imagenet_v2",
+    parser.add_argument('-pd', '--pred-dir', default="../snapshots/val_predictions/mp_pspnet_atex/",
                         type=str, help='directory of annotator')
     parser.add_argument('-j', '--json-dir', default='./',
                         type=str, help='labels\' ID information')
