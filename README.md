@@ -53,3 +53,16 @@ Such a long-tailed distribution is common for semantic segmentation datasets eve
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/r2_images_vs_pixels.svg">
   Figure 5.  The "R-squared" of the regression between the number of images and pixels is relatively low.
 </p>
+
+# Reference
+
+```
+@misc{erfani2021atlantis,
+      title={ATLANTIS: A Benchmark for Semantic Segmentation of Waterbody Images}, 
+      author={Seyed Mohammad Hassan Erfani and Zhenyao Wu and Xinyi Wu and Song Wang and Erfan Goharian},
+      year={2021},
+      eprint={2111.11567},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
