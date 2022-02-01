@@ -55,7 +55,7 @@ Such a long-tailed distribution is common for semantic segmentation datasets eve
 </p>
 
 # Reference
-If you use this data, please cite the following paper which can be downloaded through this [link](https://arxiv.org/abs/2111.11567):
+If you use this data, please cite the following paper which can be downloaded through this [link](https://www.sciencedirect.com/science/article/pii/S1364815222000391):
 ```
 @article{erfani2022atlantis,
   title={ATLANTIS: A benchmark for semantic segmentation of waterbody images},
