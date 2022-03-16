@@ -1,153 +1,213 @@
-import os
 import argparse
-import os.path as osp
-
+import os
 import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils import data
 import torch.backends.cudnn as cudnn
-
+from dataloader import ATLANTIS
+from torch.utils.data import DataLoader
 from models.pspnet import PSPNet
-from utils.plrds import adjust_learning_rate
-
-from AtlantisLoader import AtlantisDataSet
 import joint_transforms as joint_transforms
 
-INPUT_SIZE = '640'
-MODEL = 'PSPNet'
-NUM_CLASSES = 56
-SNAPSHOT_DIR = './snapshots/mixed_precision/pspnet_coco_v2/'
-DATA_DIRECTORY = './atlantis'
-BATCH_SIZE = 2
-NUM_WORKERS = 4
-LEARNING_RATE = 2.5e-4
-MOMENTUM = 0.9
-WEIGHT_DECAY = 0.0001
-NUM_EPOCHS = 30
-POWER = 0.9
-RESTORE_FROM = './snapshots/resnet_state_dict/resnet101_coco.pth'
+
+class AdjustLearningRate:
+    num_of_iterations = 0
+
+    def __init__(self, optimizer, base_lr, max_iter, power):
+        self.optimizer = optimizer
+        self.base_lr = base_lr
+        self.max_iter = max_iter
+        self.power = power
+
+    def __call__(self, current_iter):
+        lr = self.base_lr * ((1 - float(current_iter) / self.max_iter) ** self.power)
+        self.optimizer.param_groups[0]['lr'] = lr
+        if len(self.optimizer.param_groups) > 1:
+            self.optimizer.param_groups[1]['lr'] = lr * 10
+
+        return lr
 
 
-def get_arguments():
-    parser = argparse.ArgumentParser(description="PSPNet Network")
-    parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
-                        help="Comma-separated string with height and width of s")
+def train_loop(dataloader, model, loss_fn, optimizer, lr_estimator, interpolation):
+    # size = len(dataloader.dataset)
+    for batch, (images, masks, _, _, _) in enumerate(dataloader, 1):
+
+        # GPU deployment
+        images = images.cuda()
+        masks = masks.cuda()
+
+        # Compute prediction and loss
+        aux, pred = model(images)
+        aux = interpolation(aux)
+        pred = interpolation(pred)
+        loss = loss_fn(pred, masks) + 0.4 * loss_fn(aux, masks)
+
+        # Backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        lr_estimator.num_of_iterations += len(images)
+        lr = lr_estimator(lr_estimator.num_of_iterations)
+
+        if batch % 100 == 0:
+            loss, current = loss.item(), lr_estimator.num_of_iterations
+            print(f"loss: {loss:.5f}, lr = {lr:.6f} [{current:6d}/{lr_estimator.max_iter:6d}]")
+
+
+def val_loop(dataloader, model, loss_fn, interpolation):
+    size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+    test_loss, correct = 0, 0
+
+    with torch.no_grad():
+        for images, masks, _, _, _ in dataloader:
+
+            # GPU deployment
+            images = images.cuda()
+            masks = masks.cuda()
+
+            # Compute prediction and loss
+            aux, pred = model(images)
+            aux = interpolation(aux)
+            pred = interpolation(pred)
+            test_loss += loss_fn(pred, masks) + 0.4 * loss_fn(aux, masks)
+            correct += (pred.argmax(1) == masks).type(torch.float).sum().item()
+
+        test_loss /= num_batches
+        correct /= (size * masks.size(1) * masks.size(2))
+        print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+
+
+def main(
+        model,
+        num_classes,
+        snapshot_dir,
+        restore_from,
+        input_size,
+        data_directory,
+        batch_size,
+        num_workers,
+        learning_rate,
+        momentum,
+        weight_decay,
+        epochs,
+        power
+):
+    cudnn.enabled = True
+    cudnn.benchmark = True
+
+    # Loading model
+    if model == "PSPNet":
+        model = PSPNet(img_channel=3, num_classes=num_classes)
+
+    try:
+        os.makedirs(snapshot_dir)
+    except FileExistsError:
+        pass
+
+    saved_state_dict = torch.load(restore_from)
+    new_params = model.state_dict().copy()
+
+    for key, value in saved_state_dict.items():
+        if key.split(".")[0] not in ["head", "dsn", "fc"]:
+            new_params[key] = value
+
+    model.load_state_dict(new_params, strict=False)
+
+    model = model.cuda()
+    model.train()
+
+    # Dataloader
+    train_joint_transform_list = [
+        joint_transforms.RandomSizeAndCrop(
+            input_size,
+            False,
+            pre_size=None,
+            scale_min=0.5,
+            scale_max=2.0,
+            ignore_index=0),
+        joint_transforms.Resize(args.input_size),
+        joint_transforms.RandomHorizontallyFlip()]
+
+    train_joint_transform = joint_transforms.Compose(train_joint_transform_list)
+    train_dataset = ATLANTIS(data_directory, split="train", joint_transform=train_joint_transform)
+    val_dataset = ATLANTIS(data_directory, split="val", joint_transform=train_joint_transform)
+
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
+                                  num_workers=num_workers, pin_memory=True, drop_last=False)
+
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True,
+                                num_workers=num_workers, pin_memory=True, drop_last=False)
+
+    # Initializing the loss function and optimizer
+    loss_fn = torch.nn.CrossEntropyLoss(ignore_index=255)
+    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate,
+                                momentum=momentum, weight_decay=weight_decay)
+
+    interpolation = torch.nn.Upsample(size=(input_size, input_size), mode="bilinear",
+                                      align_corners=True)
+
+    max_iter = epochs * len(train_dataloader.dataset)
+    lr_poly = AdjustLearningRate(optimizer, learning_rate, max_iter, power)
+
+    for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}\n-------------------------------")
+        train_loop(train_dataloader, model, loss_fn, optimizer, lr_poly, interpolation)
+        val_loop(val_dataloader, model, loss_fn, interpolation)
+        torch.save(model.state_dict(),
+                   os.path.join(snapshot_dir, "epoch" + str(epoch + 1) + ".pth"))
+    print("Done!")
+
+
+def get_arguments(
+        INPUT_SIZE=640,
+        MODEL="PSPNet",
+        NUM_CLASSES=56,
+        SNAPSHOT_DIR="snapshots/review_results/",
+        DATA_DIRECTORY="atlantis",
+        BATCH_SIZE=2,
+        NUM_WORKERS=4,
+        LEARNING_RATE=2.5e-4,
+        MOMENTUM=0.9,
+        WEIGHT_DECAY=0.0001,
+        NUM_EPOCHS=30,
+        POWER=0.9,
+        RESTORE_FROM="snapshots/resnet101-imagenet.pth"
+):
+    parser = argparse.ArgumentParser(description=f"Training {MODEL} on ATLANTIS.")
     parser.add_argument("--model", type=str, default=MODEL,
-                        help="available options : PSPNet")
-    parser.add_argument("--restore-from", type=str, default=RESTORE_FROM,
-                        help="Where restore model parameters from.")
+                        help=f"Model Name: {MODEL}")
     parser.add_argument("--num-classes", type=int, default=NUM_CLASSES,
-                        help="Number of classes to predict (including background).")
+                        help="Number of classes to predict, including background.")
     parser.add_argument("--snapshot-dir", type=str, default=SNAPSHOT_DIR,
                         help="Where to save snapshots of the model.")
+    parser.add_argument("--restore-from", type=str, default=RESTORE_FROM,
+                        help="Where to restore the model parameters.")
+    parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
+                        help="Comma-separated string with height and width of s")
     parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
                         help="Path to the directory containing the source dataset.")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,
                         help="Number of images sent to the network in one step.")
     parser.add_argument("--num-workers", type=int, default=NUM_WORKERS,
-                        help="number of workers for multithread dataloading.")
+                        help="Number of workers for multithreading dataloader.")
     parser.add_argument("--learning-rate", type=float, default=LEARNING_RATE,
-                        help="Base learning rate for training with pimgolynomial decay.")
+                        help="Base learning rate for training with polynomial decay.")
     parser.add_argument("--momentum", type=float, default=MOMENTUM,
-                        help="Momentum component of the optimiser.")
+                        help="Momentum component of the optimizer.")
     parser.add_argument("--weight-decay", type=float, default=WEIGHT_DECAY,
                         help="Regularisation parameter for L2-loss.")
     parser.add_argument("--num-epochs", type=int, default=NUM_EPOCHS,
                         help="Number of epochs for training.")
     parser.add_argument("--power", type=float, default=POWER,
                         help="Decay parameter to compute the learning rate.")
+
     return parser.parse_args()
 
 
-args = get_arguments()
-
-def main():
-
-    if not os.path.exists(args.snapshot_dir):
-        os.makedirs(args.snapshot_dir)
-
-    input_size = args.input_size
-
-    if args.model == 'PSPNet':
-        model = PSPNet(img_channel=3, num_classes=args.num_classes)
-
-    saved_state_dict = torch.load(args.restore_from)
-    # saved_state_dict = saved_state_dict["model_state"]
-    new_params = model.state_dict().copy()
-
-    for key, value in saved_state_dict.items():
-        if key.split(".")[0] not in ["head", "dsn", "fc"]:
-            # print(key)
-            new_params[key] = value
-
-    model.load_state_dict(new_params, strict=False)
-    # print(model)
-    # exit()
-
-    model = model.cuda()
-    model.train()
-
-    cudnn.enabled = True
-    cudnn.benchmark = True
-
-    train_joint_transform_list = [
-        joint_transforms.RandomSizeAndCrop(args.input_size,
-                                           False,
-                                           pre_size=None,
-                                           scale_min=0.5,
-                                           scale_max=2.0,
-                                           ignore_index=0),
-        joint_transforms.Resize(args.input_size),
-        joint_transforms.RandomHorizontallyFlip()]
-
-    train_joint_transform = joint_transforms.Compose(
-        train_joint_transform_list)
-
-    trainloader = data.DataLoader(AtlantisDataSet(args.data_dir, split='train', joint_transform=train_joint_transform),
-                                  batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
-                                  pin_memory=True, drop_last=False)
-
-    optimizer = optim.SGD(model.parameters(),
-                          lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
-    seg_loss = torch.nn.CrossEntropyLoss(ignore_index=255)
-
-    interp = nn.Upsample(size=(input_size, input_size),
-                         mode='bilinear', align_corners=True)
-
-    scaler = torch.cuda.amp.GradScaler()
-
-    i_iter = 0
-    print(len(trainloader))
-    for epoch in range(args.num_epochs):
-        for images, labels, _, _, _ in trainloader:
-
-            optimizer.zero_grad()
-
-            i_iter += images.shape[0]
-            lr = adjust_learning_rate(
-                args, optimizer, i_iter, args.num_epochs * len(trainloader.dataset))
-
-            with torch.cuda.amp.autocast():
-                images = images.cuda()
-                labels = labels.cuda()
-
-                aux, pred = model(images)
-                pred = interp(pred)
-                aux = interp(aux)
-
-                loss = seg_loss(pred, labels) + 0.4 * seg_loss(aux, labels)
-
-                scaler.scale(loss).backward()
-                scaler.step(optimizer)
-
-                scaler.update()
-
-            print(
-                f"epoch = {epoch:2d}, iter = {i_iter:6d}/{args.num_epochs * len(trainloader.dataset):6d}, {i_iter/(args.num_epochs * len(trainloader.dataset)):2.2%}, loss_seg = {loss:.3f}, lr = {lr:.6f}")
-        torch.save(model.state_dict(), osp.join(
-            args.snapshot_dir, 'epoch' + str(epoch) + '.pth'))
-
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    args = get_arguments()
+    print(f"{args.model} is deployed on {torch.cuda.get_device_name(0)}")
+    main(args.model, args.num_classes, args.snapshot_dir,
+         args.restore_from, args.input_size, args.data_dir,
+         args.batch_size, args.num_workers, args.learning_rate,
+         args.momentum, args.weight_decay, args.num_epochs, args.power)
