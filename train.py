@@ -56,7 +56,7 @@ def train_loop(dataloader, model, loss_fn, optimizer, lr_estimator, interpolatio
 def val_loop(dataloader, model, loss_fn, interpolation):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
-    test_loss, correct = 0, 0
+    val_loss, correct = 0, 0
 
     with torch.no_grad():
         for images, masks, _, _, _ in dataloader:
@@ -69,12 +69,12 @@ def val_loop(dataloader, model, loss_fn, interpolation):
             aux, pred = model(images)
             aux = interpolation(aux)
             pred = interpolation(pred)
-            test_loss += loss_fn(pred, masks) + 0.4 * loss_fn(aux, masks)
+            val_loss += loss_fn(pred, masks) + 0.4 * loss_fn(aux, masks)
             correct += (pred.argmax(1) == masks).type(torch.float).sum().item()
 
-        test_loss /= num_batches
+        val_loss /= num_batches
         correct /= (size * masks.size(1) * masks.size(2))
-        print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+        print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {val_loss:>8f} \n")
 
 
 def main(
