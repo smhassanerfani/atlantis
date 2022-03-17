@@ -177,7 +177,7 @@ def get_arguments(
     parser.add_argument("--model", type=str, default=MODEL,
                         help=f"Model Name: {MODEL}")
     parser.add_argument("--num-classes", type=int, default=NUM_CLASSES,
-                        help="Number of classes to predict, including background.")
+                        help="Number of classes to predict, excluding background.")
     parser.add_argument("--snapshot-dir", type=str, default=SNAPSHOT_DIR,
                         help="Where to save snapshots of the model.")
     parser.add_argument("--restore-from", type=str, default=RESTORE_FROM,
