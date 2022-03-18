@@ -77,34 +77,20 @@ def val_loop(dataloader, model, loss_fn, interpolation):
         print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {val_loss:>8f} \n")
 
 
-def main(
-        model,
-        num_classes,
-        snapshot_dir,
-        restore_from,
-        input_size,
-        data_directory,
-        batch_size,
-        num_workers,
-        learning_rate,
-        momentum,
-        weight_decay,
-        epochs,
-        power
-):
+def main(args):
     cudnn.enabled = True
     cudnn.benchmark = True
 
     # Loading model
-    if model == "PSPNet":
-        model = PSPNet(img_channel=3, num_classes=num_classes)
+    if args.model == "PSPNet":
+        model = PSPNet(img_channel=3, num_classes=args.num_classes)
 
     try:
-        os.makedirs(snapshot_dir)
+        os.makedirs(args.snapshot_dir)
     except FileExistsError:
         pass
 
-    saved_state_dict = torch.load(restore_from)
+    saved_state_dict = torch.load(args.restore_from)
     new_params = model.state_dict().copy()
 
     for key, value in saved_state_dict.items():
@@ -119,7 +105,7 @@ def main(
     # Dataloader
     train_joint_transform_list = [
         joint_transforms.RandomSizeAndCrop(
-            input_size,
+            args.input_size,
             False,
             pre_size=None,
             scale_min=0.5,
@@ -129,41 +115,41 @@ def main(
         joint_transforms.RandomHorizontallyFlip()]
 
     train_joint_transform = joint_transforms.Compose(train_joint_transform_list)
-    train_dataset = ATLANTIS(data_directory, split="train", joint_transform=train_joint_transform)
-    val_dataset = ATLANTIS(data_directory, split="val", joint_transform=train_joint_transform)
+    train_dataset = ATLANTIS(args.data_directory, split="train", joint_transform=train_joint_transform)
+    val_dataset = ATLANTIS(args.data_directory, split="val", joint_transform=train_joint_transform)
 
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
-                                  num_workers=num_workers, pin_memory=True, drop_last=False)
+    train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
+                                  num_workers=args.num_workers, pin_memory=True, drop_last=False)
 
-    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True,
-                                num_workers=num_workers, pin_memory=True, drop_last=False)
+    val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True,
+                                num_workers=args.num_workers, pin_memory=True, drop_last=False)
 
     # Initializing the loss function and optimizer
     loss_fn = torch.nn.CrossEntropyLoss(ignore_index=255)
-    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate,
-                                momentum=momentum, weight_decay=weight_decay)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
 
-    interpolation = torch.nn.Upsample(size=(input_size, input_size), mode="bilinear",
+    interpolation = torch.nn.Upsample(size=(args.input_size, args.input_size), mode="bilinear",
                                       align_corners=True)
 
-    max_iter = epochs * len(train_dataloader.dataset)
-    lr_poly = AdjustLearningRate(optimizer, learning_rate, max_iter, power)
+    max_iter = args.num_epochs * len(train_dataloader.dataset)
+    lr_poly = AdjustLearningRate(optimizer, args.learning_rate, max_iter, args.power)
 
-    for epoch in range(epochs):
+    for epoch in range(args.num_epochs):
         print(f"Epoch {epoch + 1}\n-------------------------------")
         train_loop(train_dataloader, model, loss_fn, optimizer, lr_poly, interpolation)
         val_loop(val_dataloader, model, loss_fn, interpolation)
         torch.save(model.state_dict(),
-                   os.path.join(snapshot_dir, "epoch" + str(epoch + 1) + ".pth"))
+                   os.path.join(args.snapshot_dir, "epoch" + str(epoch + 1) + ".pth"))
     print("Done!")
 
 
 def get_arguments(
-        INPUT_SIZE=640,
         MODEL="PSPNet",
         NUM_CLASSES=56,
         SNAPSHOT_DIR="snapshots/review_results/",
         DATA_DIRECTORY="atlantis",
+        INPUT_SIZE=640,
         BATCH_SIZE=2,
         NUM_WORKERS=4,
         LEARNING_RATE=2.5e-4,
@@ -184,7 +170,7 @@ def get_arguments(
                         help="Where to restore the model parameters.")
     parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
                         help="Comma-separated string with height and width of s")
-    parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
+    parser.add_argument("--data-directory", type=str, default=DATA_DIRECTORY,
                         help="Path to the directory containing the source dataset.")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,
                         help="Number of images sent to the network in one step.")
@@ -207,7 +193,4 @@ def get_arguments(
 if __name__ == "__main__":
     args = get_arguments()
     print(f"{args.model} is deployed on {torch.cuda.get_device_name(0)}")
-    main(args.model, args.num_classes, args.snapshot_dir,
-         args.restore_from, args.input_size, args.data_dir,
-         args.batch_size, args.num_workers, args.learning_rate,
-         args.momentum, args.weight_decay, args.num_epochs, args.power)
+    main(args)
