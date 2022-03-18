@@ -79,13 +79,21 @@ def main(args):
     compute_mIoU(args.gt_dir, args.pred_dir, json_dir=args.json_dir)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-gt', '--gt-dir', default='../atlantis/masks/val',
+def get_arguments(
+    gt_dir="../atlantis/masks/test",
+    pred_dir="../snapshots/test_review_results_epoch30",
+    json_dir="./"
+):
+    parser = argparse.ArgumentParser(description="Calculation of mIoU")
+    parser.add_argument('-gt', '--gt-dir', default=gt_dir,
                         type=str, help='directory of inconsistency analysis data')
-    parser.add_argument('-pd', '--pred-dir', default="../snapshots/val_predictions/mp_pspnet_atex/",
+    parser.add_argument('-pd', '--pred-dir', default=pred_dir,
                         type=str, help='directory of annotator')
-    parser.add_argument('-j', '--json-dir', default='./',
+    parser.add_argument('-j', '--json-dir', default=json_dir,
                         type=str, help='labels\' ID information')
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = get_arguments()
     main(args)
