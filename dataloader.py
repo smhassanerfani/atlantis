@@ -66,6 +66,7 @@ class ATLANTIS(data.Dataset):
             top_pad = self.padding_size - height
             right_pad = self.padding_size - width
             image = np.lib.pad(image, ((0, 0), (top_pad, 0), (0, right_pad)), mode='constant', constant_values=0)
+            image = torch.from_numpy(image)
 
         label_copy = label - 1
         label_copy[label_copy == -1] = 255
@@ -81,11 +82,11 @@ class ATLANTIS(data.Dataset):
 
 
 def main():
-    dataset = ATLANTIS("./atlantis", "val", padding_size=768)
+    dataset = ATLANTIS("./atlantis", "test", padding_size=768)
     print(len(dataset))
     dataiter = iter(dataset)
     image, mask, name, width, height = next(dataiter)
-    print(image.shape, mask.shape, name, (width, height))
+    print(image.shape, mask.shape, name, (height, width))
 
 
 if __name__ == "__main__":
