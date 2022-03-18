@@ -4,7 +4,6 @@ import numpy as np
 from skimage.io import imsave
 from tqdm import tqdm
 import torch
-from torch.nn import functional as F
 import torch.backends.cudnn as cudnn
 from utils.palette import colorize_mask
 from models.pspnet import PSPNet
@@ -42,8 +41,6 @@ def main(args):
                                       align_corners=True)
     with torch.no_grad():
         for image, mask, name, width, height in tqdm(test_dataloader):
-            # image = F.interpolate(image, size=(args.input_size, args.input_size), mode="bilinear",
-            #                       align_corners=True)
 
             # GPU deployment
             image = image.cuda()
@@ -75,7 +72,6 @@ def get_arguments(
     model="PSPNet",
     split="test",
     num_classes=56,
-    input_size=640,
     padding_size=768,
     batch_size=1,
     num_workers=1,
@@ -90,8 +86,6 @@ def get_arguments(
                         help="ATLANTIS 'test' set.")
     parser.add_argument("--num-classes", type=int, default=num_classes,
                         help="Number of classes to predict, excluding background.")
-    parser.add_argument("--input-size", type=int, default=input_size,
-                        help="Integer number determining the height and width of input image.")
     parser.add_argument("--padding-size", type=int, default=padding_size,
                         help="Integer number determining the height and width of model output.")
     parser.add_argument("--batch-size", type=int, default=batch_size,
