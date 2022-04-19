@@ -2,11 +2,11 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="189.55911mm"
-   height="86.882256mm"
-   viewBox="0 0 189.55911 86.882256"
+   width="167.22157mm"
+   height="73.301025mm"
+   viewBox="0 0 167.22157 73.301025"
    version="1.1"
-   id="svg5"
+   id="svg1054"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
    sodipodi:docname="sa.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -15,7 +15,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
-     id="namedview7"
+     id="namedview1056"
      pagecolor="#505050"
      bordercolor="#eeeeee"
      borderopacity="1"
@@ -24,21 +24,21 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.0482005"
-     inkscape:cx="447.9105"
-     inkscape:cy="115.43593"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="1.4805976"
+     inkscape:cx="115.1562"
+     inkscape:cy="160.0705"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0" />
+     inkscape:current-layer="layer1" />
   <defs
-     id="defs2">
+     id="defs1051">
     <clipPath
        clipPathUnits="userSpaceOnUse"
        id="clipPath577">
@@ -523,19 +523,19 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-2.757009,108.16363)">
+     transform="translate(20.797607,-69.140099)">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.192527;stroke-dasharray:1.15517, 1.15517"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.166095;stroke-dasharray:0.99657, 0.99657"
        id="rect1871"
-       width="189.55911"
-       height="86.882256"
-       x="2.757009"
-       y="-108.16363" />
+       width="167.22157"
+       height="73.301025"
+       x="-20.797607"
+       y="69.140099" />
     <g
        clip-path="url(#clip1)"
        clip-rule="nonzero"
        id="g1149"
-       transform="matrix(0.57308605,0,0,0.57308605,0.82818963,-108.42616)">
+       transform="matrix(0.49667457,0,0,0.49667457,-22.041899,69.127654)">
       <use
          xlink:href="#image98477"
          transform="matrix(0.261025,0,0,0.261025,139.82882,3.2728149)"
@@ -549,7 +549,7 @@
        clip-path="url(#clip4)"
        clip-rule="nonzero"
        id="g1161"
-       transform="matrix(0.56118906,0,0,0.56118906,4.1757141,-106.79972)">
+       transform="matrix(0.48636385,0,0,0.48636385,-19.352379,70.537232)">
       <use
          xlink:href="#image98486"
          transform="matrix(0.261025,0,0,0.261025,0.354464,0.444)"
@@ -561,7 +561,7 @@
     </g>
     <g
        id="g1584"
-       transform="translate(7.3815038,-119.05436)">
+       transform="translate(-21.173112,46.304469)">
       <g
          style="fill:#000000;fill-opacity:1"
          id="g1173"
@@ -644,7 +644,7 @@
     <g
        style="fill:#000000;fill-opacity:1"
        id="g1205"
-       transform="matrix(0.35277778,0,0,0.35277778,47.407152,-77.523866)">
+       transform="matrix(0.35277778,0,0,0.35277778,8.8525354,87.827742)">
       <use
          xlink:href="#glyph0-1"
          x="172.9942"
@@ -710,7 +710,8 @@
          height="100%" />
     </g>
     <g
-       id="g1602">
+       id="g1602"
+       transform="translate(-43.766616,177.30374)">
       <g
          style="fill:#000000;fill-opacity:1"
          id="g1265"
@@ -767,7 +768,8 @@
          id="path1279" />
     </g>
     <g
-       id="g1591">
+       id="g1591"
+       transform="translate(-43.766616,177.30374)">
       <path
          style="fill:#3f3f7f;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.352778"
          d="m 157.55211,-101.11833 h 10.29394 v -5.43223 h -10.29394 z m 0,0"
@@ -800,7 +802,8 @@
       </g>
     </g>
     <g
-       id="g1619">
+       id="g1619"
+       transform="translate(-43.766616,177.30374)">
       <path
          style="fill:#00bfbf;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.352778"
          d="m 157.55211,-82.06695 h 10.29394 v -5.432227 h -10.29394 z m 0,0"
@@ -897,7 +900,8 @@
       </g>
     </g>
     <g
-       id="g1628">
+       id="g1628"
+       transform="translate(-43.766616,177.30374)">
       <path
          style="fill:#007f00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.352778"
          d="m 157.55211,-73.091788 h 10.29394 v -5.432226 h -10.29394 z m 0,0"
@@ -944,7 +948,8 @@
       </g>
     </g>
     <g
-       id="g1640">
+       id="g1640"
+       transform="translate(-43.766616,177.30374)">
       <path
          style="fill:#007fbf;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.352778"
          d="m 157.55211,-63.56541 h 10.29394 v -5.432228 h -10.29394 z m 0,0"
