@@ -46,15 +46,10 @@ Figure 3 demonstrates the spatial distributions of the most frequent co-occurred
 
 Another example is when we deal with complex shapes and labels, such as “swamp”. It is very difficult to visually identify the difference between “marsh” and “swamp” even for water resources expert.
 
-<TABLE>
-  <TR>
-     <TD><a href="https://youtu.be/HD9_MBwlGFE"><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/46882608915.png" width="100%" /></a></TD>
-     <TD><a href="https://youtu.be/5JvMjWNVkKM"><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/49216008106.png" width="100%" /></a></TD>
-  </TR>
-  <TR>
-     <TD align="center"><a>(Watch Video 1)</a></TD>
-  </TR>
-</TABLE>
+<p align="center">
+  <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/swamp_vs_marsh.svg">
+  Figure 3. The most frequent label at each pixel of (a) river, (b) canal.
+</p>
 
 In this case, auxiliary labels such as “cypress tree” can help since this kind of tree inhabits exclusively in swamps and has a rather unique shape. Also, herbaceous plants that generally grow in other type of wetlands were considered as part of the “marsh”, and aquatic parts for both cases are annotated as “wetland” which is a general form of such waterbodies. By annotating different types of vegetation as “cypress tree” and “marsh” along with “wetland”, it is expected that models consider co-existence of these labels in a scene to distinguish the differences between similar objects. For example, model will be able to identify “swamp” vs. “marsh” by taking advantage of a simple post-processing and evaluating the combination of “cypress tree - wetland” or “marsh - wetland”, which in turn results in a more precise identifications of complex and similar objects.
 
