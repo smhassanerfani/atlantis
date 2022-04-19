@@ -48,29 +48,29 @@ Another example is when we deal with complex shapes and labels, such as “swamp
 
 <p align="center">
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/swamp_vs_marsh.svg">
-  Figure 3. (a) Swamps are dominated by trees, (b) while marshes are often dominated by grasses.
+  Figure 4. (a) Swamps are dominated by trees, (b) while marshes are often dominated by grasses.
 </p>
 
-In this case, auxiliary labels such as “cypress tree” can help since this kind of tree inhabits exclusively in swamps and has a rather unique shape. Also, herbaceous plants that generally grow in other type of wetlands were considered as part of the “marsh”, and aquatic parts for both cases are annotated as “wetland” which is a general form of such waterbodies. By annotating different types of vegetation as “cypress tree” and “marsh” along with “wetland”, it is expected that models consider co-existence of these labels in a scene to distinguish the differences between similar objects. For example, model will be able to identify “swamp” vs. “marsh” by taking advantage of a simple post-processing and evaluating the combination of “cypress tree - wetland” or “marsh - wetland”, which in turn results in a more precise identifications of complex and similar objects.
+In this case, auxiliary labels such as “cypress tree” can help since this kind of tree inhabits exclusively in swamps and has a rather unique shape. Also, herbaceous plants that generally grow in other type of wetlands were considered as part of the “marsh”, and aquatic parts for both cases are annotated as “wetland” which is a general form of such waterbodies. By annotating different types of vegetation as “cypress tree” and “marsh” along with “wetland”, it is expected that models consider co-existence of these labels in a scene to distinguish the differences between similar objects.
 
 ## Dataset Statistics
 
-Figure 3 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies.
+Figure 5 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies.
 <p align="center">
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.svg">
-  Figure 3. Frequency distribution of the number of images assigned to each waterbody label.
+  Figure 5. Frequency distribution of the number of images assigned to each waterbody label.
 </p>
 
-Figure 4 shows the frequency distribution of the number of pixels for all 56 ATLANTIS labels plus background (percentage).
+Figure 6 shows the frequency distribution of the number of pixels for all 56 ATLANTIS labels plus background (percentage).
 <p align="center">
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/pixels_frequency_distribution.svg">
-  Figure 4. Percentage of pixels frequency distribution for all 56 ATLANTIS labels plus background.
+  Figure 6. Percentage of pixels frequency distribution for all 56 ATLANTIS labels plus background.
 </p>
 
 Such a long-tailed distribution is common for semantic segmentation datasets even if the number of images that contain specific label are pre-controlled. Such frequency distribution for pixels would be inevitable for objects existing in real-world. Taking "water tower" as an example, despite having 219 images, the number of pixels are less than many other labels in the dataset. In total, only 4.89% of pixels are unlabeled, and 34.17% and 60.94% of pixels belong to waterbodies (natural and artificial) and general labels, respectively. 
 <p align="center">
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/r2_images_vs_pixels.svg">
-  Figure 5.  The "R-squared" of the regression between the number of images and pixels is relatively low.
+  Figure 7.  The "R-squared" of the regression between the number of images and pixels is relatively low.
 </p>
 
 # Reference
