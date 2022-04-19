@@ -38,12 +38,25 @@ In order to gather a corpus of images, we have used Flickr API to query and coll
 
 In order to decide what waterbodies should be included in ATLANTIS, an initial list of natural waterbodies and man-made hydraulic structures was prepared. Then, with the objects and labels with common functionalities were merged into a unique label. For example, the pier, dock, and harbor labels, were all labeled into pier, levee, embankment, and floodbank were labeled as levee. Further, for the natural waterbodies, labels were merged based on their visual features. For example, ocean, sea, gulf, and lagoon were grouped and labeled as sea. In addition to introducing a wide range of waterbodies, the ATLANTIS dataset aims to provide contextual information by identifying about auxiliary objects which most likely can be found in water-related scenes. During defining the labels, a list of general objects which can give clues about existence of water-related objects in a scene were identified and considered for annotation. For example, it is expected to see common urban features, such as building and roads, when one wants to identify the different between a river and man-made canal. It is expected that if urban features are found, the waterbody is a man-made canal and not a river. In other words, canals are located where a bunch of pixels are already labeled as "building", "road" or "sidewalk". 
 
-Figure 3 demonstrates the spatial distributions of the most frequent co-occurred labels with respect to "river" and "canal" waterbody label. In the other words, Figure 3 indicates the most frequent label at each pixel of the ground truth segmentation tensor which is comprised of all corresponding ground-truth segmentation maps for each label. This figure explicitly approves that sorrunding settings commonly exist in a "river" scene is totally different from those of "canal."
+Figure 3 demonstrates the spatial distributions of the most frequent co-occurred labels with respect to "river" and "canal" waterbody label. In the other words, Figure 3 indicates the most frequent label at each pixel of the ground truth segmentation tensor which is comprised of all corresponding ground-truth segmentation maps for each label. This figure explicitly approves that sorrunding settings which commonly exist in a "river" scene is totally different from those of "canal."
+<p align="center">
+  <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/sa.svg">
+  Figure 3. The most frequent label at each pixel of (a) river, (b) canal.
+</p>
 
+Another example is when we deal with complex shapes and labels, such as “swamp”. It is very difficult to visually identify the difference between “marsh” and “swamp” even for water resources expert.
 
-Another example is when we deal with complex shapes and labels, such as "swamp". It is very difficult to identify the difference between "marsh" and "swamp" visually even for a water resources expert. So, the challenge was how we need to distinguish between labels which represent similar features, such as "swamp" and "marsh". In this case, we were looking for auxiliary labels which provide more information to make a better decision about the label. For example, to distinguish between the "swamp" and "marsh", we were searching for "cypress tree". These trees inhabit exclusively in swamps and have a rather unique shape. Also, in the case of the marsh label, herbaceous plant that generally grows in this environment were considered as part of the "marsh" label, and aquatic parts for both cases are annotated as "wetland" which is a general form of such waterbodies. By annotating different types of vegetation as "cypress tree" and "marsh" along with "wetland", it is expected that models consider co-existence of these labels in a scene to distinguish the differences between similar objects. For example, model will be able to identify "swamp" vs. "marsh" by taking advantage of a simple post-processing and evaluating the combination of "cypress tree - wetland" or "marsh - wetland", which in turn results in a more precise identifications of complex and similar objects.
+<TABLE>
+  <TR>
+     <TD><a href="https://youtu.be/HD9_MBwlGFE"><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/46882608915.png" width="100%" /></a></TD>
+     <TD><a href="https://youtu.be/5JvMjWNVkKM"><img src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/49216008106.png" width="100%" /></a></TD>
+  </TR>
+  <TR>
+     <TD align="center"><a>(Watch Video 1)</a></TD>
+  </TR>
+</TABLE>
 
-
+In this case, auxiliary labels such as “cypress tree” can help since this kind of tree inhabits exclusively in swamps and has a rather unique shape. Also, herbaceous plants that generally grow in other type of wetlands were considered as part of the “marsh”, and aquatic parts for both cases are annotated as “wetland” which is a general form of such waterbodies. By annotating different types of vegetation as “cypress tree” and “marsh” along with “wetland”, it is expected that models consider co-existence of these labels in a scene to distinguish the differences between similar objects. For example, model will be able to identify “swamp” vs. “marsh” by taking advantage of a simple post-processing and evaluating the combination of “cypress tree - wetland” or “marsh - wetland”, which in turn results in a more precise identifications of complex and similar objects.
 
 ## Dataset Statistics
 
