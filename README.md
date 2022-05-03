@@ -34,24 +34,43 @@ In order to gather a corpus of images, we have used Flickr API to query and coll
   </TR>
 </TABLE>
 
-## Dataset Statistics
+### Defining Waterbody Classes
 
-Figure 3 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies.
+In order to decide what waterbodies should be included in ATLANTIS, an initial list of natural waterbodies and man-made hydraulic structures was prepared. Then, with the objects and labels with common functionalities were merged into a unique label. For example, the pier, dock, and harbor labels, were all labeled into pier, levee, embankment, and floodbank were labeled as levee. Further, for the natural waterbodies, labels were merged based on their visual features. For example, ocean, sea, gulf, and lagoon were grouped and labeled as sea. In addition to introducing a wide range of waterbodies, the ATLANTIS dataset aims to provide contextual information by identifying about auxiliary objects which most likely can be found in water-related scenes. During defining the labels, a list of general objects which can give clues about existence of water-related objects in a scene were identified and considered for annotation. For example, it is expected to see common urban features, such as building and roads, when one wants to identify the different between a river and man-made canal. It is expected that if urban features are found, the waterbody is a man-made canal and not a river. In other words, canals are located where a bunch of pixels are already labeled as "building", "road" or "sidewalk". 
+
+Figure 3 demonstrates the spatial distributions of the most frequent co-occurred labels with respect to "river" and "canal" waterbody label. In the other words, Figure 3 indicates the most frequent label at each pixel of the ground truth segmentation tensor which is comprised of all corresponding ground-truth segmentation maps for each label. This figure explicitly approves that sorrunding settings which commonly exist in a "river" scene is totally different from those of "canal."
 <p align="center">
-  <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.svg">
-  Figure 3. Frequency distribution of the number of images assigned to each waterbody label.
+  <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/sa.svg">
+  Figure 3. The most frequent label at each pixel of (a) river, (b) canal.
 </p>
 
-Figure 4 shows the frequency distribution of the number of pixels for all 56 ATLANTIS labels plus background (percentage).
+Another example is when we deal with complex shapes and labels, such as “swamp”. It is very difficult to visually identify the difference between “marsh” and “swamp” even for water resources expert.
+
+<p align="center">
+  <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/swamp_vs_marsh.svg">
+  Figure 4. (a) Swamps are dominated by trees, (b) while marshes are often dominated by grasses.
+</p>
+
+In this case, auxiliary labels such as “cypress tree” can help since this kind of tree inhabits exclusively in swamps and has a rather unique shape. Also, herbaceous plants that generally grow in other type of wetlands were considered as part of the “marsh”, and aquatic parts for both cases are annotated as “wetland” which is a general form of such waterbodies. By annotating different types of vegetation as “cypress tree” and “marsh” along with “wetland”, it is expected that models consider co-existence of these labels in a scene to distinguish the differences between similar objects.
+
+## Dataset Statistics
+
+Figure 5 shows the frequency distribution of the number of images for waterbody labels. Labels are ranked based on pixel frequencies.
+<p align="center">
+  <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/frequency_distribution.svg">
+  Figure 5. Frequency distribution of the number of images assigned to each waterbody label.
+</p>
+
+Figure 6 shows the frequency distribution of the number of pixels for all 56 ATLANTIS labels plus background (percentage).
 <p align="center">
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/pixels_frequency_distribution.svg">
-  Figure 4. Percentage of pixels frequency distribution for all 56 ATLANTIS labels plus background.
+  Figure 6. Percentage of pixels frequency distribution for all 56 ATLANTIS labels plus background.
 </p>
 
 Such a long-tailed distribution is common for semantic segmentation datasets even if the number of images that contain specific label are pre-controlled. Such frequency distribution for pixels would be inevitable for objects existing in real-world. Taking "water tower" as an example, despite having 219 images, the number of pixels are less than many other labels in the dataset. In total, only 4.89% of pixels are unlabeled, and 34.17% and 60.94% of pixels belong to waterbodies (natural and artificial) and general labels, respectively. 
 <p align="center">
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/r2_images_vs_pixels.svg">
-  Figure 5.  The "R-squared" of the regression between the number of images and pixels is relatively low.
+  Figure 7.  The "R-squared" of the regression between the number of images and pixels is relatively low.
 </p>
 
 # Reference
