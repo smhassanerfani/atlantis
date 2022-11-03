@@ -37,13 +37,13 @@ def models(args):
     return model
 
 def build_model(args):
+    model = models(args)
 
     saved_state_dict = torch.load(args.restore_from)
     new_params = model.backbone.state_dict().copy()
-    for i in saved_state_dict:
-        i_parts = i.split('.')
-        if not i_parts[0] == 'fc':
-            new_params['.'.join(i_parts[0:])] = saved_state_dict[i]
+    for key, value in saved_state_dict.items():
+        if key.split(".")[0] not in ["fc"]:
+            new_params[key] = value
     model.backbone.load_state_dict(new_params)
 
     return model
