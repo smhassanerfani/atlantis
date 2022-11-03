@@ -11,21 +11,22 @@ from torch.utils import data
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
 
-INPUT_SIZE = '640'
-MODEL = 'AquaNet'
-NUM_CLASSES = 56
-SNAPSHOT_DIR = './snapshots/aquanet'
-DATA_DIRECTORY = '../atlantis/'
-BATCH_SIZE = 1
-NUM_WORKERS = 4
-LEARNING_RATE = 2.5e-4
-MOMENTUM = 0.9
-WEIGHT_DECAY = 0.0001
-NUM_EPOCHS = 30
-POWER = 0.9
-RESTORE_FROM = './network/resnet101-imagenet.pth'
+def get_arguments(
+    INPUT_SIZE = '640',
+    MODEL = 'AquaNet',
+    NUM_CLASSES = 56,
+    SNAPSHOT_DIR = './snapshots/aquanet',
+    DATA_DIRECTORY = '../atlantis/',
+    BATCH_SIZE = 2,
+    NUM_WORKERS = 4,
+    LEARNING_RATE = 2.5e-4,
+    MOMENTUM = 0.9,
+    WEIGHT_DECAY = 0.0001,
+    NUM_EPOCHS = 30,
+    POWER = 0.9,
+    RESTORE_FROM = './network/resnet101-imagenet.pth'
+    ):
 
-def get_arguments():
     parser = argparse.ArgumentParser(description="All Networks")
     parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
                         help="Comma-separated string with height and width of s")
@@ -96,7 +97,7 @@ def main():
     i_iter = 0
     for epoch in range(args.num_epochs):
         for images, labels, _, _, _ in trainloader:
-            i_iter+=args.batch_size
+            i_iter += args.batch_size
             optimizer.zero_grad()
             adjust_learning_rate(args, optimizer, i_iter, args.num_epochs*len(trainloader)*args.batch_size)
             images = images.cuda()
