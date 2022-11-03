@@ -210,9 +210,9 @@ class SFTLayer(nn.Module):
         shift = self.SFT_shift_conv2(self.SFT_shift_conv1(F.leaky_relu(self.SFT_shift_conv0(y), 0.1, inplace=True)))
         return x * (scale + 1) + shift
 
-class Aquanet4(nn.Module):
+class Aquanet(nn.Module):
     def __init__(self, num_classes):
-        super(Aquanet4, self).__init__()
+        super(Aquanet, self).__init__()
         self.backbone = ResNet([3, 4, 23, 3])
 
         self.context1 = nn.Sequential(
