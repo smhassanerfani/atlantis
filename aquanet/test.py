@@ -17,14 +17,14 @@ from dataloader.AtlantisLoader import AtlantisDataSet
 
 MODEL = 'AquaNet'
 NAME = MODEL.lower()
-SPLIT = 'val'
+SPLIT = 'test'
 NUM_CLASSES = 56
 BATCH_SIZE = 1
 NUM_WORKERS = 1
 PADDING_SIZE = '768'
 DATA_DIRECTORY = '../atlantis/'
-SAVE_PATH = '../../atlantis_file/result/'+SPLIT+'/'+NAME
-RESTORE_FROM = '../../atlantis_file/snapshots/'+NAME+'/epoch29.pth'
+SAVE_PATH = './result/'+SPLIT+'/'+NAME
+RESTORE_FROM = './snapshots/'+NAME+'/epoch29.pth'
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="Network")
@@ -72,7 +72,7 @@ def main():
 
     for images, labels, name, width, height in testloader:
         images = images.cuda()
-        images = F.upsample(images, [640, 640], mode='bilinear')
+        images = F.interpolate(images, [640, 640], mode='bilinear')
         with torch.no_grad():
             _, pred = model(images)
         pred = interp(pred).cpu().data[0].numpy().transpose(1,2,0)
@@ -88,7 +88,7 @@ def main():
 
         pred_col = colorize_mask(pred)
         label_col = colorize_mask(labels)
-        imsave('%s/%s.png' % (args.save_path, name[0][:-4]), pred)
+        imsave('%s/%s.png' % (args.save_path, name[0][:-4]), pred, check_contrast=False)
         if args.split == 'val':
             pred_col.save('%s/%s_color.png' % (args.save_path, name[0][:-4]))
             label_col.save('%s/%s_gt.png' % (args.save_path, name[0][:-4]))
