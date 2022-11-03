@@ -34,13 +34,14 @@ class AtlantisDataSet(data.Dataset):
     def get_images_list(self, images_base, masks_base):
         items_list = []
         for root, dirs, files in os.walk(images_base, topdown=True):
-            mask_root = os.path.join(masks_base, root.split("/")[-1])
+            mask_root = os.path.join(masks_base, os.path.split(root)[1])
             for name in files:
                 if name.endswith(".jpg"):
                     mask_name = name.split(".")
                     mask_name = mask_name[0] + ".png"
                     img_file = os.path.join(root, name)
                     label_file = os.path.join(mask_root, mask_name)
+
                     items_list.append({
                         "img": img_file,
                         "label": label_file,
