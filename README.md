@@ -1,5 +1,5 @@
 # ATLANTIS - ArTificiaL And Natural waTer-bodIes dataSet
-This is the respository for the ATLANTIS. All waterbody labels are comprehensively described in [ATLANTIS Wiki](https://github.com/smhassanerfani/atlantis/wiki). This dataset developed in the [iWERS](http://ce.sc.edu/goharian/) lab at the University of South Carolina.
+This is the repository for the ATLANTIS. All waterbody labels are comprehensively described in [ATLANTIS Wiki](https://github.com/smhassanerfani/atlantis/wiki). This dataset was developed in the [iWERS](http://ce.sc.edu/goharian/) lab at the University of South Carolina.
 <p align="center">
   <img width="100%" height="100%" src="https://github.com/smhassanerfani/atlantis/blob/master/wiki/dataset.png">
   Figure 1. ATLANTIS - ArTificiaL And Natural waTer-bodIes dataSet.
